@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Input form</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+</head>
+<body style= "background-color: #FFE6D1">
+	<img src="{{url_for('static', filename='logo2.jpeg')}}" alt="SolVe_logo"> 
+<div class="container">
+	<h1>Calculations</h1>
+	<p>Description <br> ... <br> ... <br> ... </p>
+
+
+	<form method = "POST" action = "/cal2">
+		<!-- <label for="fname">First name:</label><br>
+		<input type="text" id="fname" name="fname" value="John"><br>
+		<label for="lname">Last name:</label><br>
+		<input type="text" id="lname" name="lname" value="Doe"><br><br><br> -->
+		<div class="form-group">
+		<h3> What do you want to calculate ? </h3>
+		<div class="radio">
+			<input type="radio" id="ODF" name="caltype" value="ODF" checked=true required>
+			<label for="ODF">ODF</label><br>
+		</div>
+		<div class="radio">
+			<input type="radio" id="Model" name="caltype" value="Model">
+			<label for="Model">Model</label><br>
+		</div>
+		<div class="radio">
+			<input type="radio" id="Intensities" name="caltype" value="Intensities">
+			<label for="Intensities">Intensities</label><br><br>
+		</div>
+		</div>
+		
+		<div class="form-group">
+			<h3> Enter Metallicity </h3>
+			<label for="mbyh">M/H value :</label>
+			<input type="number" id="metallicity" name="mbyh" min="-4" max="2" step="0.01" value = "1" required><br><br>
+		</div>
+		
+		<div class="form-group">
+		<h3>Standard or non-standard element composition ?</h3>
+		<input type="radio" id="stdcom" name="cominp" value="0" checked=true required>
+		<label for="stdcom">Standard</label><br>
+		<input type="radio" id="usercom" name="cominp" value="1" >
+		<label for="usercom">User-Defined</label><br><br>
+		</div>
+
+		<div class="form-group">
+		<!-- <div class="radio"> -->
+			<h3>For standard choose element composition type, for user-defined choose on which it should be based</h3>
+			<input type="radio" id="Anders" name="comtype" value="0" checked=true required>
+			<label for="Anders">Anders</label><br>
+			<input type="radio" id="Grevess" name="comtype" value="1">
+			<label for="Grevess">Grevess</label><br>
+			<input type="radio" id="Asplund" name="comtype" value="2">
+			<label for="Asplund">Asplund</label><br><br><br>
+		<!-- </div> -->
+		</div>
+		 <input type="submit" value =" Next " class="btn btn-primary"> 
+
+	</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Input 2</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+</head>
+<body style= "background-color: #FFE6D1">
+	<img src="{{url_for('static', filename='logo2.jpeg')}}" alt="SolVe_logo"> 
+	<div class = "container">
+<!-- <script src="myScript.js"></script>  -->
+<h1>Model Calculations</h1>
+<p>Description <br> ... <br> ... <br> ... <br><br></p>
+
+
+<form class = "form-horizontal" action = "/resmodel" method ="POST">
+
+	<div style = "display: none;" id = "predata">
+		<input type="number" id="stdtype" name="stdtype" min="0" max="1" value = {{stdtype}} readonly="readonly" required>
+		<input type="number" id="abtype" name="abtype" min="0" max="2" value = {{abtype}} readonly="readonly" required>
+		<input type="number" id="metallicity" name="mbyh" min="-4" max="2" step="0.01" value = {{mh}} readonly="readonly" required>
+	</div>
+
+	{% if stdtype == 1 %}
+	<h2> Element Abundancies </h2>
+	<p>Change the values which differ from the standard values</p><br>
+
+	<!-- {% for vals in abun%}
+	<label for="at2">Helium Abunduncy</label>
+	<input type="number" id="at2" name="at2" min="-20" max="1" value = {{vals}} required><br>
+	{%endfor%} -->
+
+	
+
+	<h4> Hydrogen and Helium abundancies ratio (N_element/N_total) </h4><br>
+	<div class="form-group">
+		<label for="at1">Hydrogen Abundancy </label>
+		<input type="number" id="at1" name="at1" min="0" max="1" step = "0.00001" value = {{abunlist[0]}} required>
+	</div>
+	<div class="form-group">
+		<label for="at2">Helium Abundancy</label>
+		<input type="number" id="at2" name="at2" min="0" max="1" step = "0.00001" value = {{abunlist[1]}} required><br><br>
+	</div>
+
+	<h4> Other element concentration log values (log10(N_element/N_total)) </h4><br>
+	
+	{% for i in range(3, 10) %}
+	<div class="form-group">
+		<label for="at{{i}}">Atomic number {{i}} : </label>
+		<input type="number" id="at{{i}}" name="at{{i}}" min="-20" max="0" step = "0.01" value = {{abunlist[i-1]}} required >
+	</div>
+	{%endfor%}
+
+	<div style = "display: none;" id="showall">
+		{% for i in range(10, 100) %}
+		<div class="form-group">
+			<label for="at{{i}}">Atomic number {{i}} : </label>
+			<input type="number" id="at{{i}}" name="at{{i}}" min="-20" max="0" step = "0.01" value = {{abunlist[i-1]}} required >
+		</div>
+		{%endfor%}
+		 <input type="button" value="Hide All" onclick="shows(0)"> 
+	</div>
+	<input type="button" id = "btnshow" value="Show All" onclick="shows(1)"> 
+	<br><br>
+	{%endif%}
+
+	<!-- {% if stdtype == 1 %}
+	<h2> Element Abundancies </h2>
+	<p>Change the values which differ from the standard values</p><br>
+
+	<h4> Hydrogen and Helium abundancies ratio (N_element/N_total) </h4><br>
+	<div class="form-group">
+		<label for="at1">Hydrogen Abundancy </label>
+		<input type="number" class="form-control" id="at1" name="at1" min="0" max="1" step = "0.00001" value = {{abunlist[0]}} required>
+	</div>
+	<div class="form-group">
+		<label for="at2">Helium Abundancy</label>
+		<input type="number" class="form-control" id="at2" name="at2" min="0" max="1" step = "0.00001" value = {{abunlist[1]}} required><br><br>
+	</div>
+
+	<h4> Other element concentration log values (log10(N_element/N_total)) </h4><br>
+	
+	{% for i in range(3, 10) %}
+	<div class="form-group">
+		<label for="at{{i}}">Atomic number {{i}} : </label>
+		<input type="number" id="at{{i}}" name="at{{i}}" min="-20" max="0" step = "0.01" value = {{abunlist[i-1]}} required >
+	</div>
+	{%endfor%}
+	<br><br>
+	{%endif%} -->
+	<!-- {% if stdtype == 1 %}
+		<h2> Element Abunduncies </h2>
+		<p>Change the values which differ from the standard values</p>
+
+		<h4> Hydrogen and Helium abundancies ratio (N_element/N_total) <br></h4>
+
+		<label for="at1">Hydrogen Abunduncy </label>
+		<input type="number" id="at1" name="at1" min="0" max="1" step = "0.00001" value = {{abunlist[0]}} required>
+		<label for="at2">Helium Abunduncy</label>
+		<input type="number" id="at2" name="at2" min="0" max="1" step = "0.00001" value = {{abunlist[1]}} required><br>
+
+		<h4> Other element concentration log values (log10(N_element/N_total)) </h4>
+		
+		{% for i in range(3, 10) %}
+			<label for="at{{i}}">Atomic number {{i}} : </label>
+			<input type="number" id="at{{i}}" name="at{{i}}" min="-20" max="0" step = "0.01" value = {{abunlist[i-1]}} required >
+		{%endfor%}
+		<br><br>
+	{%endif%} -->
+
+	<label> Effective Temperature : 
+	<input type="number" id="teff" name="teff" min="3400" max="12000" step="1" required> K </label><br><br>
+	<label> Log g value : 
+	<input type="number" id="logg" name="logg" min="0" max="5" step="0.001"  required > </label><br><br>
+	
+	<h4>Convection Status :</h4>
+	<label ><input type="radio" id="convecon" name="convec" value="0" onclick=getwave(0) checked=true required> On   </label><br>
+	
+	<label ><input type="radio" id="convecoff" name="convec" value="1" onclick=getwave(1)> Off </label><br>
+
+	<label> L/H value: 
+	<input type="number" id="lbyh" name="lbyh" min="0" max="5" step="0.01"  required value = "1.25"> </label><br><br>
+	
+	<input type="submit" value ="Submit" class="btn btn-primary"> 
+	<br><br>
+
+</form>
+
+
+</div>
+</body>
+<script type="text/javascript">
+
+	function getwave(box) {
+    	// var s = 'wavediv'
+    	if (box == "0"){
+	        document.getElementById('lbyh').disabled = false;
+	        // document.getElementById('wavemax').disabled = true;
+	        // document.getElementById(s).style.display="none";
+	       }
+        else {
+	        document.getElementById('lbyh').disabled = true;
+	        // document.getElementById('wavemax').disabled = false;
+        	// document.getElementById(s).style.display = "block";
+        }
+    }
+
+	function shows(ind) {
+        if (ind == "1"){
+        	document.getElementById('showall').style.display = "block";
+        	document.getElementById('btnshow').style.display="none";
+        }
+        else{
+        	document.getElementById('btnshow').style.display = "block";
+        	document.getElementById('showall').style.display="none";
+        }
+    }
+</script>
+</html>
