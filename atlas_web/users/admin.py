@@ -15,5 +15,12 @@ class UserAdmin(auth_admin.UserAdmin):
     fieldsets = (("User", {"fields": ("name",)}),) + tuple(
         auth_admin.UserAdmin.fieldsets
     )
-    list_display = ["username", "name", "is_superuser"]
+    list_display = ["username", "name", "is_superuser", "is_validated"]
     search_fields = ["name"]
+    actions = ["validate_user"]
+
+    def validate_user(modeladmin, request, queryset):
+        print("validating_users")
+        queryset.update(is_validated=True)
+
+    validate_user.short_description = "Mark users as validated."
