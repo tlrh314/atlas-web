@@ -306,3 +306,4 @@ REST_FRAMEWORK = {
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
+ACCOUNT_SIGNUP_FORM_CLASS = "users.forms.MyFrontendUserCreationForm"

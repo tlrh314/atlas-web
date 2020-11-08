@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -29,3 +30,13 @@ class UserCreationForm(admin_forms.UserCreationForm):
             return username
 
         raise ValidationError(self.error_messages["duplicate_username"])
+
+
+class MyFrontendUserCreationForm(forms.Form):
+    # TODO: add Captcha here
+    remember = forms.BooleanField(
+        label="this field is just to show that something changed", required=False
+    )
+
+    def signup(self, request, user):
+        pass
