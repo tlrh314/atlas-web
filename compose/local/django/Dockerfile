@@ -40,4 +40,7 @@ RUN chmod +x /start-flower
 
 WORKDIR /app
 
+RUN echo "export DATABASE_URL=postgres://debug:debug@postgres:5432/atlas_web" >> ~/.bashrc \
+  && echo "export CELERY_BROKER_URL=abc" >> ~/.bashrc
+
 ENTRYPOINT ["/entrypoint"]
