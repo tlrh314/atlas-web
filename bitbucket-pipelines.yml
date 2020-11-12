@@ -1,0 +1,30 @@
+pipelines:
+  default:
+    - step:
+        name: Test
+        services:
+          - docker
+          - postgres
+        caches:
+          - docker # adds docker layer caching
+        script:
+          - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_ACCESS_TOKEN_TLRH314
+          - docker pull tlrh314/atlas-web:local-build-stage || true
+          - docker pull tlrh314/atlas-web:local || true
+          - echo $BITBUCKET_DOCKER_HOST_INTERNAL
+          - >-
+            docker run --rm --entrypoint="" \
+              --env-file '.envs/.local/.django' \
+              --env-file '.envs/.local/.postgres' \
+              --add-host postgres:$BITBUCKET_DOCKER_HOST_INTERNAL \
+              -v"$BITBUCKET_CLONE_DIR:/app" tlrh314/atlas-web:local \
+              bash -c 'coverage run -m pytest && coverage html && coverage report'
+
+definitions:
+  services:
+    postgres:
+      image: postgres:12.3
+      variables:
+        POSTGRES_DB: 'atlas_web'
+        POSTGRES_USER: 'debug'
+        POSTGRES_PASSWORD: 'debug'
