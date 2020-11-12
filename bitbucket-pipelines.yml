@@ -1,0 +1,9 @@
+pipelines:
+  default:
+    - step:
+        script:
+          - docker --version
+          - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_ACCESS_TOKEN_TLRH314
+          - DOCKER_BUILDKIT=1 docker build --help
+        services:
+          - docker
