@@ -18,10 +18,10 @@ pipelines:
           - docker pull tlrh314/atlas-web:local || true
           - docker run --entrypoint="" --rm tlrh314/atlas-web:local python --version
           - >-
-            docker run --rm --entrypoint=""
-              --env-file '.envs/.local/.django'
-              --env-file '.envs/.local/.postgres'
-              -v'$(pwd):/app' tlrh314/atlas-web:local
+            docker run --rm --entrypoint="" \
+              --env-file '.envs/.local/.django' \
+              --env-file '.envs/.local/.postgres' \
+              -v'$(pwd):/app' tlrh314/atlas-web:local \
               bash -c 'coverage run -m pytest && coverage html && coverage report' || true
 
 definitions:
