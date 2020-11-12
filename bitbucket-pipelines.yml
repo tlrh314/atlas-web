@@ -1,7 +1,7 @@
 pipelines:
   default:
     - step:
-        name: Build and test
+        name: Test
         services:
           - docker
           - postgres
@@ -18,7 +18,7 @@ pipelines:
               --env-file '.envs/.local/.postgres' \
               --add-host postgres:$BITBUCKET_DOCKER_HOST_INTERNAL \
               -v"$BITBUCKET_CLONE_DIR:/app" tlrh314/atlas-web:local \
-              bash -c 'coverage run -m pytest && coverage html && coverage report' || true
+              bash -c 'coverage run -m pytest && coverage html && coverage report'
 
 definitions:
   services:
