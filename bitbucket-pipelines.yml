@@ -23,7 +23,7 @@ pipelines:
             docker run --rm --entrypoint="" \
               --env-file '.envs/.local/.django' \
               --env-file '.envs/.local/.postgres' \
-              -v"$(BITBUCKET_CLONE_DIR):/app" tlrh314/atlas-web:local \
+              -v"$BITBUCKET_CLONE_DIR:/app" tlrh314/atlas-web:local \
               bash -c 'coverage run -m pytest && coverage html && coverage report' || true
 
 definitions:
