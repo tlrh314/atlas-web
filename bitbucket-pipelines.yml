@@ -4,15 +4,31 @@ pipelines:
         name: Build and test
         services:
           - docker
+          - postgres
+        caches:
+          - docker # adds docker layer caching
         script:
           - whoami
+          - docker --version
+          - docker-compose --version || true
+          - docker network ls || true
           - make --version
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_ACCESS_TOKEN_TLRH314
           - docker pull tlrh314/atlas-web:local-build-stage || true
           - docker pull tlrh314/atlas-web:local || true
           - docker run --entrypoint="" --rm tlrh314/atlas-web:local python --version
+          - >-
+            docker run --rm --entrypoint=""
+              --env-file '.envs/.local/.django'
+              --env-file '.envs/.local/.postgres'
+              -v'$(pwd):/app' tlrh314/atlas-web:local bash -c
+                'coverage run -m pytest && coverage html && coverage report'
 
 definitions:
   services:
     postgres:
       image: postgres:12.3
+      variables:
+        POSTGRES_DB: 'atlas_web'
+        POSTGRES_USER: 'debug'
+        POSTGRES_PASSWORD: 'debug'
