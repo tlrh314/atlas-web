@@ -1,33 +1,33 @@
-version: '3'
+version: '3.8'
 
 volumes:
   local_postgres_data: {}
   local_postgres_data_backups: {}
 
+x-django: &django
+  image: tlrh314/atlas-web:local
+  depends_on:
+    - postgres
+    - mailhog
+  volumes:
+    - .:/app:z
+  env_file:
+    - ./.envs/.local/.django
+    - ./.envs/.local/.postgres
+
 services:
-  django: &django
-    build:
-      context: .
-      dockerfile: ./compose/local/django/Dockerfile
-    image: atlas_web_local_django
+  django:
+    <<: *django
     container_name: django
-    depends_on:
-      - postgres
-      - mailhog
-    volumes:
-      - .:/app:z
-    env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
     ports:
       - "8000:8000"
-    command: /start
+    command: ["/start"]
 
   postgres:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: atlas_web_production_postgres
+    image: tlrh314/atlas-web:local-postgres
     container_name: postgres
     volumes:
       - local_postgres_data:/var/lib/postgresql/data:Z
@@ -36,7 +36,7 @@ services:
       - ./.envs/.local/.postgres
 
   docs:
-    image: atlas_web_local_docs
+    image: tlrh314/atlas-web:local-docs
     container_name: docs
     build:
       context: .
@@ -49,7 +49,7 @@ services:
       - ./atlas_web:/app/atlas_web:z
     ports:
       - "7000:7000"
-    command: /start-docs
+    command: ["/start-docs"]
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
@@ -63,39 +63,37 @@ services:
 
   celeryworker:
     <<: *django
-    image: atlas_web_local_celeryworker
     container_name: celeryworker
     depends_on:
       - redis
       - postgres
       - mailhog
-    ports: []
-    command: /start-celeryworker
+    command: ["/start-celeryworker"]
+    entrypoint: [""]
 
   celerybeat:
     <<: *django
-    image: atlas_web_local_celerybeat
     container_name: celerybeat
     depends_on:
       - redis
       - postgres
       - mailhog
-    ports: []
-    command: /start-celerybeat
+    command: ["/start-celerybeat"]
+    entrypoint: [""]
 
   flower:
     <<: *django
-    image: atlas_web_local_flower
     container_name: flower
     ports:
       - "5555:5555"
-    command: /start-flower
+    command: ["/start-celeryflower"]
+    entrypoint: [""]
 
   node:
     build:
       context: .
       dockerfile: ./compose/local/node/Dockerfile
-    image: atlas_web_local_node
+    image: tlrh314/atlas-web:local-node
     container_name: node
     depends_on:
       - django
@@ -103,8 +101,12 @@ services:
       - .:/app:z
       # http://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
       - /app/node_modules
-    command: npm run dev
+    command: ["npm run dev"]
     ports:
       - "3000:3000"
       # Expose browsersync UI: https://www.browsersync.io/docs/options/#option-ui
       - "3001:3001"
+
+networks:
+  default:
+    name: atlas-web

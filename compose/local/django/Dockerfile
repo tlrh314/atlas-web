@@ -1,46 +1,82 @@
-FROM python:3.8-slim-buster
+# syntax = docker/dockerfile:experimental
+FROM python:3.8-slim-buster as local-build-stage
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONDONTWRITEBYTECODE 1
-
-RUN apt-get update \
+# BuildKit allows to mount cache for apt (and pip) to prevent re-downloading every time
+# a full build is required.
+# Sys layer /w build time dependencies
+RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0755,target=/var/lib/apt set -ex \
+  && rm -f /etc/apt/apt.conf.d/docker-clean \
+  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
+  && apt update \
   # dependencies for building Python packages
-  && apt-get install -y build-essential \
+  && apt install --no-install-recommends -y build-essential \
   # psycopg2 dependencies
-  && apt-get install -y libpq-dev \
-  # Translations dependencies
-  && apt-get install -y gettext \
+    libpq-dev \
   # cleaning up unused files
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
-RUN pip install -r /requirements/local.txt
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pip set -ex \
+  && pip wheel --no-deps --use-feature=2020-resolver --wheel-dir /usr/src/app/wheels \
+    -r /requirements/local.txt
 
-COPY ./compose/production/django/entrypoint /entrypoint
-RUN sed -i 's/\r$//g' /entrypoint
-RUN chmod +x /entrypoint
+FROM python:3.8-slim-buster as local-run-stage
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+LABEL maintainer="Timo Halbesma <timo@halbesma.com>"
 
-COPY ./compose/local/django/start /start
-RUN sed -i 's/\r$//g' /start
-RUN chmod +x /start
+# Sys layer /w runtime dependencies
+RUN set -ex \
+  && rm -f /etc/apt/apt.conf.d/docker-clean \
+  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
+  && apt update \
+  # tlrh314 dependencies
+  && apt install --no-install-recommends -y vim curl \
+  # psycopg2 dependencies
+    libpq-dev \
+  # Translations dependencies
+    gettext \
+  # cleaning up unused files
+  && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/* \
+  # non-privileged user
+  && groupadd -g 1000 atlas \
+  && useradd -r -u 1000 -g atlas atlas -s /bin/bash -d /atlas
 
-COPY ./compose/local/django/celery/worker/start /start-celeryworker
-RUN sed -i 's/\r$//g' /start-celeryworker
-RUN chmod +x /start-celeryworker
+# Pip layer
+COPY --from=local-build-stage --chown=atlas:atlas /usr/src/app/wheels  /wheels
+RUN pip install --no-cache /wheels/* \
+  && rm -rf /wheels
 
-COPY ./compose/local/django/celery/beat/start /start-celerybeat
-RUN sed -i 's/\r$//g' /start-celerybeat
-RUN chmod +x /start-celerybeat
+# Application layers
+COPY [ \
+# Source
+  "./compose/production/django/entrypoint", \
+  "./compose/local/django/start", \
+  "./compose/local/django/celery/worker/start-celeryworker", \
+  "./compose/local/django/celery/beat/start-celerybeat", \
+  "./compose/local/django/celery/flower/start-celeryflower", \
+# Destination
+  "/" \
+]
+RUN set -ex \
+  && sed -i 's/\r$//g' /entrypoint \
+  && chmod +x /entrypoint \
+\
+  && sed -i 's/\r$//g' /start \
+  && chmod +x /start \
+\
+  && sed -i 's/\r$//g' /start-celeryworker \
+  && chmod +x /start-celeryworker \
+\
+  && sed -i 's/\r$//g' /start-celerybeat \
+  && chmod +x /start-celerybeat \
+\
+  && sed -i 's/\r$//g' /start-celeryflower \
+  && chmod +x /start-celeryflower
 
-COPY ./compose/local/django/celery/flower/start /start-flower
-RUN sed -i 's/\r$//g' /start-flower
-RUN chmod +x /start-flower
-
+USER atlas
 WORKDIR /app
-
-RUN echo "export DATABASE_URL=postgres://debug:debug@postgres:5432/atlas_web" >> ~/.bashrc \
-  && echo "export CELERY_BROKER_URL=abc" >> ~/.bashrc
 
 ENTRYPOINT ["/entrypoint"]

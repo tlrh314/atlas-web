@@ -306,4 +306,4 @@ REST_FRAMEWORK = {
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
-ACCOUNT_SIGNUP_FORM_CLASS = "users.forms.MyFrontendUserCreationForm"
+ACCOUNT_SIGNUP_FORM_CLASS = "atlas_web.users.forms.MyFrontendUserCreationForm"
