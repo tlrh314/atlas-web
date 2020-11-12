@@ -5,11 +5,11 @@ pipelines:
         services:
           - docker
         script:
+          - whoami
           - make --version
           - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_ACCESS_TOKEN_TLRH314
           - docker pull tlrh314/atlas-web:local-build-stage || true
           - docker pull tlrh314/atlas-web:local || true
-          - make django
           - docker run --entrypoint="" --rm tlrh314/atlas-web:local python --version
 
 definitions:
