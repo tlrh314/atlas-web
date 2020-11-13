@@ -1,35 +1,131 @@
-stages:
-  - lint
-  - test
+default:
+  image: docker:latest
 
 variables:
-  POSTGRES_USER: 'atlas_web'
-  POSTGRES_PASSWORD: ''
-  POSTGRES_DB: 'test_atlas_web'
-  POSTGRES_HOST_AUTH_METHOD: trust
-  CELERY_BROKER_URL: 'redis://redis:6379/0'
+  DOCKER_TLS_CERTDIR: "/certs"
 
-flake8:
-  stage: lint
-  image: python:3.8-alpine
-  before_script:
-    - pip install -q flake8
-  script:
-    - flake8
+  TEST_IMAGE: $CI_REGISTRY_IMAGE:local-$CI_BUILD_REF_SLUG
+  BUILD_CACHE: $CI_REGISTRY_IMAGE:local-build-stage-$CI_BUILD_REF_SLUG
+  BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_SLUG
+  RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
-pytest:
-  stage: test
-  image: python:3.8
-  image: docker/compose:latest
+stages:
+  - build
+  - test
+  - pages
+#  - release
+#  - deploy
+
+build_local:
+  stage: build
   tags:
     - docker
   services:
     - docker:dind
   before_script:
-    - docker-compose -f local.yml build
-    # Ensure celerybeat does not crash due to non-existent tables
-    - docker-compose -f local.yml run --rm django python manage.py migrate
-    - docker-compose -f local.yml up -d
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker-compose -f local.yml run django pytest
+    - docker pull $BUILD_CACHE || true
+    - docker pull $TEST_IMAGE || true
 
+    - DOCKER_BUILDKIT=1 docker build
+        --build-arg BUILDKIT_INLINE_CACHE=1
+        --cache-from $BUILD_CACHE
+        --target local-build-stage
+        -f compose/local/django/Dockerfile
+        -t $BUILD_CACHE .
+
+    - DOCKER_BUILDKIT=1 docker build
+        --build-arg BUILDKIT_INLINE_CACHE=1
+        --cache-from $BUILD_CACHE
+        --cache-from $TEST_IMAGE
+        -f compose/local/django/Dockerfile
+        -t $TEST_IMAGE .
+
+    - docker push $BUILD_CACHE
+    - docker push $TEST_IMAGE
+
+test:
+  stage: test
+  tags:
+    - docker
+  variables:
+    POSTGRES_USER: 'atlas_web'
+    POSTGRES_PASSWORD: ''
+    POSTGRES_DB: 'test_atlas_web'
+    POSTGRES_HOST_AUTH_METHOD: trust
+    CELERY_BROKER_URL: 'redis://redis:6379/0'
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $TEST_IMAGE
+  script:
+    - docker run -d --name postgres --env-file './.envs/.local/.postgres' postgres:12.3 || true
+    - docker ps -a || true
+    - docker run --rm --entrypoint=""
+        --env-file '.envs/.local/.django'
+        --env-file '.envs/.local/.postgres'
+        -v"$(pwd):/app"
+        --link=postgres:postgres
+        $TEST_IMAGE
+        bash -c 'coverage run -m pytest && coverage html && coverage report' || true
+  coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
+  artifacts:
+    paths:
+      - htmlcov
+    expire_in: 1 days
+
+pages:
+  stage: pages
+  tags:
+    - docker
+  dependencies:
+    - test
+  script:
+    - mv htmlcov/ public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+
+.release:
+  stage: release
+  tags:
+    - docker
+  variables:
+    GIT_STRATEGY: none
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $BUILD_IMAGE
+    - docker tag $BUILD_IMAGE $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+  only:
+    - master
+
+.deploy:
+  stage: deploy
+  tags:
+    - docker
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  # - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  # - echo "$PRODUCTION_SSH_PUBLIC_KEY" | tr -d '\r' >> ~/.ssh/id_rsa.pub
+  script:
+    - ssh-keyscan -t rsa ${PRODUCTION_IP} >> ~/.ssh/known_hosts
+    - ssh ${PRODUCTION_USER}@${PRODUCTION_IP} -p22 \
+      -o preferredAuthentications=publickey -i  ~/.ssh/id_rsa.pub \
+      "make deploy"
+  environment:
+    name: production
+    url: https://atlas.mps.mpg.de
+  only:
+  - master
