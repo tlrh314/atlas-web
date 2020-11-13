@@ -1,10 +1,9 @@
-# syntax = docker/dockerfile:experimental
 FROM python:3.8-slim-buster as local-build-stage
 
 # BuildKit allows to mount cache for apt (and pip) to prevent re-downloading every time
 # a full build is required.
 # Sys layer /w build time dependencies
-RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0755,target=/var/lib/apt set -ex \
+RUN set -ex \
   && rm -f /etc/apt/apt.conf.d/docker-clean \
   && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
   && apt update \
@@ -17,7 +16,7 @@ RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0
   && rm -rf /var/lib/apt/lists/*
 
 COPY ./requirements /requirements
-RUN --mount=type=cache,mode=0755,target=/root/.cache/pip set -ex \
+RUN set -ex \
   && pip wheel --no-deps --use-feature=2020-resolver --wheel-dir /usr/src/app/wheels \
     -r /requirements/local.txt
 
