@@ -55,7 +55,13 @@ runcmd:
   - sudo chmod +x /usr/local/bin/docker-compose
   - docker login -u tlrh314 --password SQvTxzaCC1xs-gK1p6Ag docker.gitlab.gwdg.de
   - docker pull docker.gitlab.gwdg.de/solve/atlas-web:local-development
-  - git clone https://tlrh314:SQvTxzaCC1xs-gK1p6Ag@gitlab.gwdg.de/SOLVe/atlas-web
+  - git clone https://tlrh314:SQvTxzaCC1xs-gK1p6Ag@gitlab.gwdg.de/SOLVe/atlas-web /home/tlrh314/atlas-web
+  - cd /home/tlrh314/atlas-web
+  - git checkout development
+  - mkdir .envs/.production
+  - touch .envs/.production/.postgres
+  - touch .envs/.production/.django
+  - make production
 
 power_state:
   mode: reboot

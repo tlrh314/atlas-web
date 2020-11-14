@@ -63,6 +63,7 @@ runcmd:
       --registration-token mb5wyKCm2P2ztQtRELxN
       --executor docker
       --description "atlas-web"
+      --tag-list "docker"
       --docker-image "docker:latest"
       --docker-privileged
       --docker-volumes "/certs/client"'
