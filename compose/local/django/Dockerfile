@@ -34,6 +34,8 @@ RUN set -ex \
     libpq-dev \
   # Translations dependencies
     gettext \
+  # Pillow dependencies
+    libz-dev libjpeg-dev libfreetype6-dev python-dev \
   # cleaning up unused files
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/* \

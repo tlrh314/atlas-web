@@ -1,4 +1,4 @@
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm as DefaultUserCreationForm

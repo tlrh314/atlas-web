@@ -163,5 +163,5 @@ sentry_sdk.init(
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
 )
 
-# Your stuff...
+# atlas-web specific settings
 # ------------------------------------------------------------------------------
