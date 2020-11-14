@@ -27,7 +27,7 @@ function pathsConfig(appName) {
   const vendorsRoot = 'node_modules'
 
   return {
-    
+
     app: this.app,
     templates: `${this.app}/templates`,
     css: `${this.app}/static/css`,
@@ -35,6 +35,8 @@ function pathsConfig(appName) {
     fonts: `${this.app}/static/fonts`,
     images: `${this.app}/static/images`,
     js: `${this.app}/static/js`,
+    vendor_css: `${this.app}/static/vendor/css`,
+    vendor_js: `${this.app}/static/vendor/js`,
   }
 }
 
@@ -43,6 +45,38 @@ var paths = pathsConfig()
 ////////////////////////////////
 // Tasks
 ////////////////////////////////
+
+
+// Copy vendor JS into output folder
+var copyVendorJs = function (done) {
+
+  let vendor_js = [
+      // bootstrap.bundle.min.js includes Popper, but not jQuery
+      'node_modules/jquery/dist/jquery.min.js',
+      'node_modules/jquery/dist/jquery.min.map',
+      'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+      'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map',
+      'node_modules/@sentry/browser/build/bundle.min.js',
+      'node_modules/@sentry/browser/build/bundle.min.js.map',
+      'node_modules/cookieconsent/build/cookieconsent.min.js',
+  ];
+
+  return src(vendor_js)
+    .pipe(dest(paths.vendor_js));
+};
+
+// Copy vendor CSS into output folder
+var copyVendorCss = function (done) {
+
+  let vendor_css = [
+      'node_modules/bootstrap/dist/css/bootstrap.min.css',
+      'node_modules/bootstrap/dist/css/bootstrap.min.css.map',
+      'node_modules/cookieconsent/build/**',
+  ];
+
+  return src(vendor_css)
+    .pipe(dest(paths.vendor_css));
+};
 
 // Styles autoprefixing and minification
 function styles() {
@@ -58,7 +92,7 @@ function styles() {
   return src(`${paths.sass}/project.scss`)
     .pipe(sass({
       includePaths: [
-        
+
         paths.sass
       ]
     }).on('error', sass.logError))
@@ -130,11 +164,17 @@ function watchPaths() {
   watch([`${paths.js}/*.js`, `!${paths.js}/*.min.js`], scripts).on("change", reload)
 }
 
+// Copy vendor CSS + JS
+const copyAllVendor = parallel(
+  copyVendorJs,
+  copyVendorCss,
+)
+
 // Generate all assets
 const generateAssets = parallel(
   styles,
   scripts,
-  
+
   imgCompression
 )
 
@@ -144,6 +184,7 @@ const dev = parallel(
   watchPaths
 )
 
-exports.default = series(generateAssets, dev)
+exports.default = series(copyAllVendor, generateAssets, dev)
 exports["generate-assets"] = generateAssets
+exports["vendor"] = copyAllVendor
 exports["dev"] = dev
