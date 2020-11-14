@@ -172,6 +172,8 @@ const copyAllVendor = parallel(
 
 // Generate all assets
 const generateAssets = parallel(
+  copyAllVendor,
+
   styles,
   scripts,
 
@@ -184,7 +186,7 @@ const dev = parallel(
   watchPaths
 )
 
-exports.default = series(copyAllVendor, generateAssets, dev)
+exports.default = series(generateAssets, dev)
 exports["generate-assets"] = generateAssets
 exports["vendor"] = copyAllVendor
 exports["dev"] = dev
