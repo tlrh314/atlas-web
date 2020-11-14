@@ -93,12 +93,18 @@ production:  ## Build production image (locally) for Django+Celery
 		-f compose/production/django/Dockerfile \
 		-t docker.gitlab.gwdg.de/solve/atlas-web:production .
 
-production-start:  ## Start Django locally from production build
-	@docker-compose -f local.yml up -d django celeryworker
+production-start:  ## Start Django from production build
+	@docker-compose -f production.yml up --build -d django celeryworker
 
-production-stop:  ## Stop Django locally from production build
-	@docker-compose -f local.yml stop django celeryworker
-	@docker-compose -f local.yml rm -f django celeryworker
+production-stop:  ## Stop Django from production build
+	@docker-compose -f production.yml stop django celeryworker
+	@docker-compose -f production.yml rm -f django celeryworker
+
+production-restart:  ## Stop Django locally from production build
+	@git pull
+	@make production
+	@make production-stop
+	@make production-start
 
 
 runner-start:  ## Deploy GitLab runner at Hetzner Cloud
