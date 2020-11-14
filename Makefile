@@ -14,16 +14,16 @@ django:  ## Build container for Django+Celery
 	@make docker-pull
 	@DOCKER_BUILDKIT=1 docker build \
 		--build-arg BUILDKIT_INLINE_CACHE=1 \
-		--cache-from tlrh314/atlas-web:local-build-stage \
+		--cache-from docker.gitlab.gwdg.de/solve/atlas-web:local-build-stage \
 		-f compose/local/django/Dockerfile \
 		--target local-build-stage \
-		-t tlrh314/atlas-web:local-build-stage .
+		-t docker.gitlab.gwdg.de/solve/atlas-web:local-build-stage .
 	@DOCKER_BUILDKIT=1 docker build \
 		--build-arg BUILDKIT_INLINE_CACHE=1 \
-		--cache-from tlrh314/atlas-web:local-build-stage \
-		--cache-from tlrh314/atlas-web:local \
+		--cache-from docker.gitlab.gwdg.de/solve/atlas-web:local-build-stage \
+		--cache-from docker.gitlab.gwdg.de/solve/atlas-web:local \
 		-f compose/local/django/Dockerfile \
-		-t tlrh314/atlas-web:local .
+		-t docker.gitlab.gwdg.de/solve/atlas-web:local .
 
 django-start:  ## Start Django
 	@docker-compose -f local.yml up -d django celeryworker
@@ -46,3 +46,26 @@ log-all:  ## Continously monitor all containers
 
 stop-all:  ## Stop Django and dependencies
 	@docker-compose -f local.yml down
+
+
+production:  ## Build production image (locally) for Django+Celery
+	@make docker-pull
+	@DOCKER_BUILDKIT=1 docker build \
+		--build-arg BUILDKIT_INLINE_CACHE=1 \
+		--cache-from docker.gitlab.gwdg.de/solve/atlas-web:production-client-builder \
+		-f compose/production/django/Dockerfile \
+		--target client-builder \
+		-t docker.gitlab.gwdg.de/solve/atlas-web:production-client-builder .
+	@DOCKER_BUILDKIT=1 docker build \
+		--build-arg BUILDKIT_INLINE_CACHE=1 \
+		--cache-from docker.gitlab.gwdg.de/solve/atlas-web:production-client-builder \
+		--cache-from docker.gitlab.gwdg.de/solve/atlas-web:production \
+		-f compose/production/django/Dockerfile \
+		-t docker.gitlab.gwdg.de/solve/atlas-web:production .
+
+production-start:  ## Start Django locally from production build
+	@docker-compose -f local.yml up -d django celeryworker
+
+production-stop:  ## Stop Django locally from production build
+	@docker-compose -f local.yml stop django celeryworker
+	@docker-compose -f local.yml rm -f django celeryworker

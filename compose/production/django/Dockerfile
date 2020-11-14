@@ -8,54 +8,59 @@ RUN npm run build
 
 # Python build stage
 FROM python:3.8-slim-buster
-
+LABEL maintainer="Timo Halbesma <timo@halbesma.com>"
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update \
+RUN set -ex \
+  && apt-get update \
   # dependencies for building Python packages
-  && apt-get install -y build-essential \
+  && apt-get install --no-install-recommends -y build-essential \
   # psycopg2 dependencies
-  && apt-get install -y libpq-dev \
-  # Translations dependencies
-  && apt-get install -y gettext \
+  libpq-dev \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN addgroup --system django \
-    && adduser --system --ingroup django django
+  && rm -rf /var/lib/apt/lists/* \
+  # non-privileged user
+  && groupadd -g 1000 atlas \
+  && useradd -r -u 1000 -g atlas atlas -s /bin/bash -d /atlas
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
     && rm -rf /requirements
 
-COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
-RUN sed -i 's/\r$//g' /entrypoint
-RUN chmod +x /entrypoint
+COPY --from=client-builder --chown=atlas:atlas /app /app
+
+# Application layers
+COPY --chown=atlas:atlas [ \
+# Source
+  "./compose/production/django/entrypoint", \
+  "./compose/production/django/start", \
+  "./compose/production/django/celery/worker/start-celeryworker", \
+  "./compose/production/django/celery/beat/start-celerybeat", \
+  "./compose/production/django/celery/flower/start-celeryflower", \
+# Destination
+  "/" \
+]
+RUN set -ex \
+  && sed -i 's/\r$//g' /entrypoint \
+  && chmod +x /entrypoint \
+\
+  && sed -i 's/\r$//g' /start \
+  && chmod +x /start \
+\
+  && sed -i 's/\r$//g' /start-celeryworker \
+  && chmod +x /start-celeryworker \
+\
+  && sed -i 's/\r$//g' /start-celerybeat \
+  && chmod +x /start-celerybeat \
+\
+  && sed -i 's/\r$//g' /start-celeryflower \
+  && chmod +x /start-celeryflower
 
 
-COPY --chown=django:django ./compose/production/django/start /start
-RUN sed -i 's/\r$//g' /start
-RUN chmod +x /start
-COPY --chown=django:django ./compose/production/django/celery/worker/start /start-celeryworker
-RUN sed -i 's/\r$//g' /start-celeryworker
-RUN chmod +x /start-celeryworker
 
-
-COPY --chown=django:django ./compose/production/django/celery/beat/start /start-celerybeat
-RUN sed -i 's/\r$//g' /start-celerybeat
-RUN chmod +x /start-celerybeat
-
-
-COPY ./compose/production/django/celery/flower/start /start-flower
-RUN sed -i 's/\r$//g' /start-flower
-RUN chmod +x /start-flower
-COPY --from=client-builder --chown=django:django /app /app
-
-
-USER django
-
+USER atlas
 WORKDIR /app
 
 ENTRYPOINT ["/entrypoint"]

@@ -4,15 +4,13 @@ FROM python:3.8-slim-buster as local-build-stage
 # a full build is required.
 # Sys layer /w build time dependencies
 RUN set -ex \
-  && rm -f /etc/apt/apt.conf.d/docker-clean \
-  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
-  && apt update \
+  && apt-get update \
   # dependencies for building Python packages
-  && apt install --no-install-recommends -y build-essential \
+  && apt-get install --no-install-recommends -y build-essential \
   # psycopg2 dependencies
     libpq-dev \
   # cleaning up unused files
-  && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
 COPY ./requirements /requirements
