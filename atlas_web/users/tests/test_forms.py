@@ -25,8 +25,10 @@ class TestUserCreationForm:
         assert form.is_valid()
         assert form.clean_email() == proto_user.email
 
-        # Creating a user.
-        form.save()
+        # Creating a user, which should result in an active, but non-validated user
+        user = form.save()
+        assert user.email == proto_user.email
+        assert User.objects.count() == 1
 
         # The user with proto_user params already exists,
         # hence cannot be created.

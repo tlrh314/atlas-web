@@ -23,7 +23,7 @@ User = get_user_model()
 class UserRegisterView(CreateView):
     form_class = UserCreationForm
     template_name = "users/register.html"
-    success_url = reverse_lazy("users:profile")
+    success_url = reverse_lazy("users:redirect")
 
     def form_valid(self, form):
         valid = super().form_valid(form)

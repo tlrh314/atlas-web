@@ -30,9 +30,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
-    # is_superuser inherited from PermissionsMixin
+    # is_superuser is already inherited from PermissionsMixin
     is_validated = models.BooleanField(
-        _("Has the User been Validated?"), blank=False, default=False
+        _("Validated"),
+        default=False,
+        help_text=_(
+            "Designates whether the user has been validated by an atlas-web admin."
+        ),
     )
 
     # Time stamps, and logging of who changed user info
