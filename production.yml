@@ -1,23 +1,24 @@
-version: '3'
+version: '3.8'
 
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
   production_traefik: {}
 
+x-django: &django
+  image: docker.gitlab.gwdg.de/solve/atlas-web:production
+  depends_on:
+    - postgres
+    - redis
+  env_file:
+    - ./.envs/.production/.django
+    - ./.envs/.production/.postgres
+
 services:
-  django: &django
-    build:
-      context: .
-      dockerfile: ./compose/production/django/Dockerfile
-    image: atlas_web_production_django
-    depends_on:
-      - postgres
-      - redis
-    env_file:
-      - ./.envs/.production/.django
-      - ./.envs/.production/.postgres
-    command: /start
+  django:
+    <<: *django
+    container_name: django
+    command: ["/start"]
 
   postgres:
     build:
@@ -41,7 +42,6 @@ services:
       - production_traefik:/etc/traefik/acme:z
     ports:
       - "0.0.0.0:80:80"
-      - "0.0.0.0:443:443"
       - "0.0.0.0:5555:5555"
 
   redis:
@@ -49,17 +49,19 @@ services:
 
   celeryworker:
     <<: *django
-    image: atlas_web_production_celeryworker
-    command: /start-celeryworker
+    entrypoint: [""]
+    command: ["/start-celeryworker"]
 
   celerybeat:
     <<: *django
-    image: atlas_web_production_celerybeat
-    command: /start-celerybeat
+    entrypoint: [""]
+    command: ["/start-celerybeat"]
 
   flower:
     <<: *django
-    image: atlas_web_production_flower
-    command: /start-flower
+    entrypoint: [""]
+    command: ["/start-flower"]
 
-  
+networks:
+  default:
+    name: atlas

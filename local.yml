@@ -5,7 +5,7 @@ volumes:
   local_postgres_data_backups: {}
 
 x-django: &django
-  image: tlrh314/atlas-web:local
+  image: docker.gitlab.gwdg.de/solve/atlas-web:local
   depends_on:
     - postgres
     - mailhog
@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: tlrh314/atlas-web:local-postgres
+    image: docker.gitlab.gwdg.de/solve/atlas-web:local-postgres
     container_name: postgres
     volumes:
       - local_postgres_data:/var/lib/postgresql/data:Z
@@ -36,7 +36,7 @@ services:
       - ./.envs/.local/.postgres
 
   docs:
-    image: tlrh314/atlas-web:local-docs
+    image: docker.gitlab.gwdg.de/solve/atlas-web:local-docs
     container_name: docs
     build:
       context: .
@@ -68,8 +68,8 @@ services:
       - redis
       - postgres
       - mailhog
-    command: ["/start-celeryworker"]
     entrypoint: [""]
+    command: ["/start-celeryworker"]
 
   celerybeat:
     <<: *django
@@ -78,22 +78,22 @@ services:
       - redis
       - postgres
       - mailhog
-    command: ["/start-celerybeat"]
     entrypoint: [""]
+    command: ["/start-celerybeat"]
 
   flower:
     <<: *django
     container_name: flower
     ports:
       - "5555:5555"
-    command: ["/start-celeryflower"]
     entrypoint: [""]
+    command: ["/start-celeryflower"]
 
   node:
     build:
       context: .
       dockerfile: ./compose/local/node/Dockerfile
-    image: tlrh314/atlas-web:local-node
+    image: docker.gitlab.gwdg.de/solve/atlas-web:local-node
     container_name: node
     depends_on:
       - django
@@ -101,7 +101,7 @@ services:
       - .:/app:z
       # http://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
       - /app/node_modules
-    command: ["npm run dev"]
+    command: npm run dev
     ports:
       - "3000:3000"
       # Expose browsersync UI: https://www.browsersync.io/docs/options/#option-ui
@@ -109,4 +109,4 @@ services:
 
 networks:
   default:
-    name: atlas-web
+    name: atlas
