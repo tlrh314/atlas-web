@@ -61,6 +61,9 @@ log-all:  ## Continously monitor all containers
 stop-all:  ## Stop Django and dependencies
 	@docker-compose -f local.yml down
 
+test:  ## Run the test suite locally
+	@docker exec -it django bash -c "coverage run -m pytest && coverage html && coverage report"
+
 
 production:  ## Build production image (locally) for Django+Celery
 	@make docker-pull
