@@ -5,11 +5,7 @@ from django.test import RequestFactory
 
 from atlas_web.users.models import User
 from atlas_web.users.tests.factories import UserFactory
-from atlas_web.users.views import (
-    UserRedirectView,
-    UserUpdateView,
-    user_detail_view,
-)
+from atlas_web.users.views import UserRedirectView, UserUpdateView, user_detail_view
 
 pytestmark = pytest.mark.django_db
 
