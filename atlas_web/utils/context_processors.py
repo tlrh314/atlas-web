@@ -2,7 +2,9 @@ from django.conf import settings
 
 
 def settings_context(_request):
-    """Settings available by default to the templates context."""
-    # Note: we intentionally do NOT expose the entire settings
-    # to prevent accidental leaking of sensitive information
+    """
+    Note that context_processors are processed before every response. Not that if you want
+    to make a variable available in every template, then you can pass the variable here
+    instead of passing that variable to every template individually via the relevant view.
+    """
     return {"DEBUG": settings.DEBUG}

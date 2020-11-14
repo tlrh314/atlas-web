@@ -1,10 +1,11 @@
+import filebrowser.sites
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import RedirectView, TemplateView
-from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -22,19 +23,24 @@ urlpatterns = [
         name="imprint",
     ),
     # Django Admin, use {% url 'admin:index' %}
-    path(settings.ADMIN_URL, admin.site.urls),
+    path("tinymce/", include("tinymce.urls")),
+    path("admin/filebrowser/", filebrowser.sites.site.urls),
+    path("admin/", admin.site.urls),
+    path(
+        "admin/password_reset/",
+        auth_views.PasswordResetView.as_view(),
+        name="admin_password_reset",
+    ),
+    path("admin/", include("django.contrib.auth.urls")),
     # User management
     path("users/", include("atlas_web.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
+    # Futher atlas-web specific urls
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS
 urlpatterns += [
     # API base url
     path("api/", include("config.api_router")),
-    # DRF auth token
-    path("auth-token/", obtain_auth_token),
 ]
 
 if settings.DEBUG:
@@ -62,3 +68,8 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+
+    if "silk" in settings.INSTALLED_APPS:
+        urlpatterns = [
+            path("silk/", include("silk.urls", namespace="silk"))
+        ] + urlpatterns
