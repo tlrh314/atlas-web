@@ -1,10 +1,10 @@
 import pytest
 
-from atlas_web.simulation.forms import SimulationInputForm
+from atlas_web.simulation.forms import SimulationForm
 
 pytestmark = pytest.mark.django_db
 
 
-class TestSimulationInputForm:
+class TestSimulationForm:
     def test_clean_field(self):
         pass
