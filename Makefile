@@ -118,5 +118,5 @@ ssh-prototype:  ## SSH to the prototype VPS
 	@ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(hcloud server ip atlasprototype)
 
 destroy-prototype:  ## Destroy prototype at Hetzner Cloud
-	@hcloud server shutdown atlasgitlabrunner || true
-	@hcloud server delete atlasgitlabrunner || true
+	@hcloud server shutdown atlasprototype || true
+	@hcloud server delete atlasprototype || true
