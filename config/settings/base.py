@@ -60,6 +60,9 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # "django.contrib.humanize", # Handy template tags
+    # Make sure to import tinymce and filebrowser before django.contrib.admin
+    "tinymce",
+    "filebrowser",
     "django.contrib.admin",
     "django.forms",
 ]

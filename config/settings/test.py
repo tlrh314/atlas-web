@@ -47,5 +47,12 @@ TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
+# django-filebrowser-no-grappelli
+# ------------------------------------------------------------------------------
+#  https://github.com/smacker/django-filebrowser-no-grappelli
+# We import the settings from the FileBrowser just now b/c the import must be
+# done after the SECRET_KEY is already set (above)
+from .filebrowser import *  # noqa isort:skip
+
 # atlas-web specific settings
 # ------------------------------------------------------------------------------

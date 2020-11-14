@@ -36,6 +36,12 @@ django-restart:  ## Restart Django
 	@make django-stop
 	@make django-start
 
+bash:  ## Open an interactive bash shell in the django container
+	@docker exec -it django bash
+
+manage:  ## Open an interactive Django shell [iPython interpreter]
+	@docker exec -it django bash -c "python manage.py shell_plus"
+
 django-log:  ## Continously monitor the Django application server log
 	@while true; do \
 		docker logs -f --tail 1 django; \
@@ -51,6 +57,13 @@ django-run-from-image:  ## Run command in a tmp container from image, but /w dat
 		-v"$$(pwd):/app" \
 		docker.gitlab.gwdg.de/solve/atlas-web:local \
 		bash -c "python manage.py makemigrations users"
+
+
+django-sites-fix:  ## Set the correct Site instance (locally)
+	@docker exec django python manage.py shell -c \
+		"from django.contrib.sites.models import Site; print(Site.objects.all()); \
+		Site.objects.all().delete(); \
+		print(Site.objects.get_or_create(pk=1, domain='localhost:8000', name='localhost:8000'))"; \
 
 log-all:  ## Continously monitor all containers
 	@while true; do \

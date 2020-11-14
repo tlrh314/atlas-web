@@ -53,21 +53,17 @@
             </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'users:detail' request.user.username  %}">{% trans "My Profile" %}</a>
+                <a class="nav-link" href="{% url 'users:detail' request.user.pk %}">{% trans "Profile" %}</a>
               </li>
               <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'home' %}">{% trans "Sign Out" %}</a>
+                <a class="nav-link" href="{% url 'users:logout' %}">{% trans "Logout" %}</a>
               </li>
             {% else %}
               <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a id="sign-up-link" class="nav-link" href="{% url 'users:register' %}">{% trans "Sign Up" %}</a>
+                <a id="sign-up-link" class="nav-link" href="{% url 'users:register' %}">{% trans "Register" %}</a>
               </li>
               <li class="nav-item">
-                {# URL provided by django-allauth/account/urls.py #}
-                <a id="log-in-link" class="nav-link" href="{% url 'users:login' %}">{% trans "Sign In" %}</a>
+                <a id="log-in-link" class="nav-link" href="{% url 'users:login' %}">{% trans "Login" %}</a>
               </li>
             {% endif %}
           </ul>

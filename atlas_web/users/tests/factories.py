@@ -30,3 +30,10 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = get_user_model()
         django_get_or_create = ("email",)
+
+
+class AdminFactory(UserFactory):
+    is_active = True
+    is_validated = True
+    is_staff = True
+    is_superuser = True
