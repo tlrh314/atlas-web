@@ -276,4 +276,17 @@ atlas_web/media/
 .env
 .envs/*
 !.envs/.local/
+
 atlas_web/static/vendor
+
+# Ignore $HOME files
+.bash_aliases
+.bash_functions
+.bashrc
+.coveragerc
+.jupyter
+.vimrc
+.config
+.local
+.pki
+.python_history
