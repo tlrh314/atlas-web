@@ -1,42 +1,75 @@
-from django import forms
+from captcha.fields import CaptchaField
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm as DefaultUserCreationForm
 from django.core.exceptions import ValidationError
+from django.forms.utils import ErrorList
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
-class UserChangeForm(admin_forms.UserChangeForm):
+class UserCreationForm(DefaultUserCreationForm):
+    """ This form is used in the frontend, for public signup at the website """
+
+    # captcha = CaptchaField()
+
+    class Meta:
+        model = User
+        fields = ("email", "password1", "password2")
+
+    def clean_email(self):
+        super().clean()
+        email = self.cleaned_data.get("email")
+        existing_user = User.objects.filter(email=email)
+        if existing_user.exists():  # Better to ask permission than forgiveness
+            self.errors["email"] = ErrorList()
+            self.errors["email"].append(
+                "The chosen email address is already registered."
+            )
+        return email
+
+    def save(self, commit=True):
+        user = super().save()
+        user.is_active = True
+        user.is_validated = False
+        user.save()
+
+        subject = _("Please verify email adres for your atlas-web account")
+        context = {"user": str(user)}
+        text_content = render_to_string("users/account_created.txt", context)
+        html_content = render_to_string("users/account_created.html", context)
+        user.send_email(subject, text_content, html_content)
+
+        # TODO: push to Slack: "Hey admin, md5(user.email.lower()) signed up! Please verify/reject?
+        return user
+
+
+class UserAdminChangeForm(admin_forms.UserChangeForm):
+    """ This form is used in the Django admin to change a user """
+
     class Meta(admin_forms.UserChangeForm.Meta):
         model = User
 
 
-class UserCreationForm(admin_forms.UserCreationForm):
+class UserAdminCreationForm(admin_forms.UserCreationForm):
+    """ This form is used in the Django admin to create a user """
 
     error_message = admin_forms.UserCreationForm.error_messages.update(
-        {"duplicate_username": _("This username has already been taken.")}
+        {"duplicate_email": _("This email address has already been taken.")}
     )
 
     class Meta(admin_forms.UserCreationForm.Meta):
         model = User
+        exclude = ("username",)
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
+    def clean_email(self):
+        email = self.cleaned_data["email"]
 
-        try:
-            User.objects.get(username=username)
+        try:  # Better to ask forgiveness than permission
+            User.objects.get(email=email)
         except User.DoesNotExist:
-            return username
+            return email
 
-        raise ValidationError(self.error_messages["duplicate_username"])
-
-
-class MyFrontendUserCreationForm(forms.Form):
-    # TODO: add Captcha here
-    remember = forms.BooleanField(
-        label="this field is just to show that something changed", required=False
-    )
-
-    def signup(self, request, user):
-        pass
+        raise ValidationError(self.error_messages["duplicate_email"])

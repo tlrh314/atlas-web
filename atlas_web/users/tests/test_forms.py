@@ -1,26 +1,29 @@
 import pytest
+from django.contrib.auth import get_user_model
 
 from atlas_web.users.forms import UserCreationForm
 from atlas_web.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
+User = get_user_model()
 
 
 class TestUserCreationForm:
-    def test_clean_username(self):
+    def test_clean_email(self):
+        assert User.objects.count() == 0
         # A user with proto_user params does not exist yet.
         proto_user = UserFactory.build()
 
         form = UserCreationForm(
             {
-                "username": proto_user.username,
+                "email": proto_user.email,
                 "password1": proto_user._password,
                 "password2": proto_user._password,
             }
         )
 
         assert form.is_valid()
-        assert form.clean_username() == proto_user.username
+        assert form.clean_email() == proto_user.email
 
         # Creating a user.
         form.save()
@@ -29,7 +32,7 @@ class TestUserCreationForm:
         # hence cannot be created.
         form = UserCreationForm(
             {
-                "username": proto_user.username,
+                "email": proto_user.email,
                 "password1": proto_user._password,
                 "password2": proto_user._password,
             }
@@ -37,4 +40,4 @@ class TestUserCreationForm:
 
         assert not form.is_valid()
         assert len(form.errors) == 1
-        assert "username" in form.errors
+        assert "email" in form.errors

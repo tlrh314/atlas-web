@@ -1,3 +1,8 @@
+"""
+Note that the conftest makes various things available to the test runner.  For example, most TestCases
+need a user, so a new user is conveniently generated using the UserFactory.
+"""
+
 import pytest
 
 from atlas_web.users.models import User
