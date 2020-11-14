@@ -69,3 +69,29 @@ production-start:  ## Start Django locally from production build
 production-stop:  ## Stop Django locally from production build
 	@docker-compose -f local.yml stop django celeryworker
 	@docker-compose -f local.yml rm -f django celeryworker
+
+
+runner-start:  ## Deploy GitLab runner at Hetzner Cloud
+	@hcloud server create --location nbg1 --ssh-key tlrh314 --type cx11 \
+		--image debian-10 --name atlasgitlabrunner \
+		--user-data-from-file compose/hetzner/runner/cloudinit
+
+ssh-runner:  ## SSH to the prototype VPS
+	@ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(hcloud server ip atlasprototype)
+
+destroy-runner:  ## Destroy GitLab runner at Hetzner Cloud
+	@hcloud server shutdown atlasgitlabrunner || true
+	@hcloud server delete atlasgitlabrunner || true
+
+
+prototype-start:  ## Deploy prototype at Hetzner Cloud
+	@hcloud server create --location nbg1 --ssh-key tlrh314 --type cx11 \
+		--image debian-10 --name atlasprototype \
+		--user-data-from-file compose/hetzner/prototype/cloudinit
+
+ssh-prototype:  ## SSH to the prototype VPS
+	@ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(hcloud server ip atlasprototype)
+
+destroy-prototype:  ## Destroy prototype at Hetzner Cloud
+	@hcloud server shutdown atlasgitlabrunner || true
+	@hcloud server delete atlasgitlabrunner || true
