@@ -7,12 +7,27 @@
     </div>
 
     <div class="mt-5">
+      <form method="post" novalidate>{% csrf_token %}
+        {% comment %}
+        TODO @Miha, use your Browser's developer tools / inspect source code to see
+        the magic that Django does under the hood to transform this {{ form }}
+        to the DOM elements input, label, select, button, etc in the html!
+            See e.g. https://docs.djangoproject.com/en/3.1/topics/forms/#working-with-form-templates
+        {% endcomment %}
+        {{ form }}
+        <button type="submit">Submit</button>
+      </form>
+    </div>
 
-    <form method="post" novalidate>
-      {% csrf_token %}
-      {{ form }}
-      <button type="submit">Submit</button>
-    </form>
+    {% if atlas_input_file_content %}
+    <div class="mt-5">
+      Your input is valid. Below sits the Atlas input file, please verify that this is correct.
+
+      <p>
+        {{ atlas_input_file_content|linebreaks }}
+      </p>
+    </div>
+    {% endif %}
 
 
 {% endblock content %}
