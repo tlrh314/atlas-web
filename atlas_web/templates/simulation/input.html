@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static i18n %}
 
 {% block content %}
 
@@ -31,3 +32,47 @@
 
 
 {% endblock content %}
+
+{% comment %}
+Here we extend the block javascript that's defined in atlas_web/templates/base.html
+We first call {{ block.super }} to also load all javascript that sits there.
+Then below that we can implement additional in-line javascript, or import from
+a new javascript file.
+{% endcomment %}
+{% block javascript %} {{ block.super }}
+
+{% comment %}
+This is an example of inline javascript. I just want to point you to the console
+where you can print things to during development. Note that this $ is jQuery, a
+javascript library with many things that'll make your life easier.
+{% endcomment %}
+<script type="text/javascript">
+$(document).ready(function() {
+    // Open the developer tools in your browser, go to console, and notice that
+    // javascript output is logged there!
+    // See e.g. https://learn.jquery.com/using-jquery-core/document-ready/ for
+    // an explanation of this business of $(document).ready
+    console.log("Hello, Miha! This javacript is executed on your input form when the page is ready");
+});
+</script>
+
+{% comment %}
+This is an example of inline javascript. Below I copied some function from
+https://gitlab.gwdg.de/SOLVe/atlas-web/-/blob/master/templates/odf2.html#L142-189
+{% endcomment %}
+<script type="text/javascript" >
+    function shows(ind) {
+        if (ind == "1"){
+            document.getElementById('showall').style.display = "block";
+            document.getElementById('btnshow').style.display="none";
+        }
+        else{
+            document.getElementById('btnshow').style.display = "block";
+            document.getElementById('showall').style.display="none";
+        }
+    }
+</script>
+
+{# A more elegant way would be to implement javascript in its own file, then import it #}
+<script type="text/javascript" src="{% static 'js/simulation_input_form.js' %}"></script>
+{% endblock javascript %}
