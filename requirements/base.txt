@@ -21,3 +21,8 @@ django-simple-captcha==0.5.13  # https://github.com/mbi/django-simple-captcha
 # Django REST Framework
 djangorestframework==3.12.2  # https://github.com/encode/django-rest-framework
 django-cors-headers==3.5.0 # https://github.com/adamchainz/django-cors-headers
+
+# Astrophysics packages
+astropy
+numpy
+scipy
