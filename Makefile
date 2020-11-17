@@ -93,18 +93,46 @@ production:  ## Build production image (locally) for Django+Celery
 		-f compose/production/django/Dockerfile \
 		-t docker.gitlab.gwdg.de/solve/atlas-web:production .
 
-production-start:  ## Start Django from production build
+production-start:  ## Start Django+Celery running from from production build
 	@docker-compose -f production.yml up --build -d django celeryworker
 
-production-stop:  ## Stop Django from production build
+production-stop:  ## Stop Django+Celery running from the production build
 	@docker-compose -f production.yml stop django celeryworker
 	@docker-compose -f production.yml rm -f django celeryworker
 
-production-restart:  ## Stop Django locally from production build
+production-restart:  ## Restart Django+Celery running from the production build
+	# Note that this command relies on a project access token created at
+	# https://gitlab.gwdg.de/SOLVe/atlas-web/-/settings/access_tokens
+	# with scopes read_repository, read_registry, and write_registry. The command
+	# `git remote get-url origin` then shows
+	# https://<username>:<token>@gitlab.gwdg.de/SOLVe/atlas-web where you would
+	# replace <username> and <token> with the real values (i.e. the characters
+	# '<' and '>' are not present in the real origin url.).
+	# Example: https://prototype:secret@gitlab.gwdg.de/SOLVe/atlas-web.
+	#   For Docker authentication+authorization to the registry we used
+	# `docker login docker login docker.gitlab.gwdg.de` once, which saved a hash
+	# of the username (name of the token) and password on disk ~/.docker/config.json.
 	@git pull
+	@docker pull docker.gitlab.gwdg.de/solve/atlas-web:production || true
 	@make production
 	@make production-stop
 	@make production-start
+	@docker push docker.gitlab.gwdg.de/solve/atlas-web:production
+	@docker image prune -f
+	# The last step is to check on localhost that our public-facing container
+	# is responding to requests for the given hostname that Django accepts, and
+	# to return non-zero exit status (--fail) such that the pipeline will fail if
+	# it's not healthy. If you need to debug: remove the -s (silent) flag to see output.
+	# Note that the -k flag is because we curl on https://localhost, but the Let's Encrypt
+	# certificate is only valid for the real host (atlas.halbesma.com).
+	# Note that we assume docker push took sufficiently long for the application server
+	# to start and become responsive. If that is not the case we may need to sleep, e.g. 5s.
+	# @sleep 5
+	@curl -k --fail -s -I -H "Host: atlas.halbesma.com" https://localhost
+	# We can also check the real host, but DNS resolves to the reverse proxy (MPS webserver)
+	# so that might not tell us about problems with the application server (the exposed)
+	# Docker container on localhost.
+	@curl --fail -s -I https://atlas.halbesma.com
 
 
 runner-start:  ## Deploy GitLab runner at Hetzner Cloud

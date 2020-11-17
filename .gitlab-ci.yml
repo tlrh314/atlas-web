@@ -1,3 +1,9 @@
+# Here we set up GitLab CI/CD to
+# 1. run the test suite for commits to all branches
+# 2. automatically update the website for updates on the master branch
+# Please see the Wiki article for all the details about the setup.
+# https://gitlab.gwdg.de/SOLVe/atlas-web/-/wikis/Development/What-is-this-pipeline-magic%3F-Explain-it-to-me,-please!
+
 default:
   image: docker:latest
 
@@ -9,14 +15,30 @@ variables:
   BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_BUILD_REF_SLUG
   RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
-stages:
-  - build
-  - test
-  - pages
-#  - release
-#  - deploy
 
-build_local:
+before_script:
+  # See https://gitlab.gwdg.de/help/ci/ssh_keys/README.md
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y ) > /dev/null 2>&1'
+  - eval $(ssh-agent -s)
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  # Settings > CI/CD > Variables > type is 'Variable'
+  - echo "$PROTOTYPE_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - echo "$PROTOTYPE_SSH_PUBLIC_KEY" | tr -d '\r' >> ~/.ssh/id_rsa.pub
+  - (ssh-keyscan -t rsa ${PROTOTYPE_IP} >> ~/.ssh/known_hosts) > /dev/null 2>&1
+
+stages:
+#  - build
+   - test
+   - pages
+#  - release
+   - deploy
+
+# Building in CI requires dind, which implies GitLab Runner /w Docker executor
+# in privileged mode. Note that GWDG-Runner-2 is not set up in privileged mode
+# and does not have support for dind as it could lead to privilege escallation
+# and naturally GWDG sys adminds protect their systems against that.
+.build_local:
   stage: build
   tags:
     - docker
@@ -45,8 +67,11 @@ build_local:
     - docker push $BUILD_CACHE
     - docker push $TEST_IMAGE
 
-test:
+# Testing in CI using our local docker image would require a Docker build of
+# said image, but see remark about build_local above for the GWDG GitLab Runner.
+.test_with_docker:
   stage: test
+  needs: ["build_local"]
   tags:
     - docker
   variables:
@@ -75,25 +100,76 @@ test:
   artifacts:
     paths:
       - htmlcov
-    expire_in: 1 days
+    expire_in: 15 minutes
+
+# Testing in CI can of course be done /w Docker executor non-privileged (i.e. w/o dind)
+# running the python:3.8-slim-buster image. We then test against an sqlite3 database 
+# and assume for all practical purposes Django's ORM handles differences between the 
+# database backend internally. In principle there could be edge cases due to underlying
+# differences, but none such problems are to be expected for the atlas-web project.
+#     Note that Pip's cache doesn't store the python packages, so we install those inside
+# a virtualenv such that we're able to also cache that for faster execution of the test stage
+test_in_venv:
+  stage: test
+  image: python:3.8-slim-buster
+  tags:
+    - GWDG-Runner-2
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    DATABASE_URL: 'sqlite:///test.db'
+    CELERY_BROKER_URL: 'redis://redis:6379/0'
+  cache:
+    paths:
+      - .cache/pip
+      - venv/
+  before_script:
+    # Install venv for cache reasons
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    # Not using postgres, so we don't install the sys binaries. Do not want to
+    # install psycopg2 through pip (and can't without sys binaries).
+    - sed -i.bak -e "s/psycopg2=.*/# psycopg2/g" requirements/local.txt
+    - pip install --use-feature=2020-resolver -r requirements/local.txt
+    # Tell the database connection string to use sqlite3 rather than postgres
+    - sed -i.bak -e "s/DATABASE_URL=.*/DATABASE_URL=sqlite:\/\/\/test.db/g" .envs/.local/.django
+    # Setup the Django application
+    - python manage.py migrate
+    - python manage.py collectstatic --noinput
+    # Uncomment the lines below of Django's Translation framework would be used
+  # - apt-get update -y && apt-get install -y gettext
+  # - python manage.py compilemessages --ignore venv
+  script:
+    - coverage run -m pytest
+    - coverage html
+    - coverage report
+  coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
+  artifacts:
+    paths:
+      - htmlcov
+    expire_in: 15 minutes
 
 pages:
   stage: pages
   tags:
-    - docker
+    - GWDG-Runner-2
   dependencies:
-    - test
+    - test_in_venv
   script:
     - mv htmlcov/ public/
   artifacts:
     paths:
       - public
     expire_in: 30 days
+  only:
+    - master
 
+# Release in CI would be the strategy if a production build on master was build
+# in CI, but see remark about build /w dind for the GWDG GitLab Runner.
 .release:
   stage: release
   tags:
-    - docker
+    - GWDG-Runner-2
   variables:
     GIT_STRATEGY: none
   services:
@@ -107,26 +183,22 @@ pages:
   only:
     - master
 
-.deploy:
+# Deploy now simply builds the latest production image at the production server,
+# and then stop+rm the Django+Celery containers and restarts Django+Celery. Note
+# that we assume that Traefik, Postgres, and Redis need not be restarted.
+# 
+deploy:
   stage: deploy
   tags:
-    - docker
+    - GWDG-Runner-2
   variables:
     GIT_STRATEGY: none
-  before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-  # - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  # - echo "$PRODUCTION_SSH_PUBLIC_KEY" | tr -d '\r' >> ~/.ssh/id_rsa.pub
   script:
-    - ssh-keyscan -t rsa ${PRODUCTION_IP} >> ~/.ssh/known_hosts
-    - ssh ${PRODUCTION_USER}@${PRODUCTION_IP} -p22 \
-      -o preferredAuthentications=publickey -i  ~/.ssh/id_rsa.pub \
-      "make deploy"
+    - ssh ${PROTOTYPE_USER}@${PROTOTYPE_IP} -p22
+      -o preferredAuthentications=publickey -i  ~/.ssh/id_rsa.pub
+      "cd atlas-web && make production-restart"
   environment:
-    name: production
-    url: https://atlas.mps.mpg.de
+    name: prototype
+    url: https://atlas.halbesma.com
   only:
   - master
