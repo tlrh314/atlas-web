@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:experimental
 FROM node:10-stretch-slim as client-builder
 
 WORKDIR /app
@@ -11,7 +12,9 @@ FROM python:3.8-slim-buster
 LABEL maintainer="Timo Halbesma <timo@halbesma.com>"
 ENV PYTHONUNBUFFERED 1
 
-RUN set -ex \
+RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0755,target=/var/lib/apt set -ex \
+  && rm -f /etc/apt/apt.conf.d/docker-clean \
+  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
   && apt-get update \
   # dependencies for building Python packages
   && apt-get install --no-install-recommends -y build-essential \
@@ -26,8 +29,8 @@ RUN set -ex \
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
-RUN pip install --no-cache-dir -r /requirements/production.txt \
-    && rm -rf /requirements
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pip set -ex \
+  && pip install --no-cache-dir -r /requirements/production.txt
 
 COPY --from=client-builder --chown=atlas:atlas /app /app
 
