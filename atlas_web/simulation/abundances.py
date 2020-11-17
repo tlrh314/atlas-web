@@ -1,6 +1,6 @@
 """ Use tuple for pre-defined lists b/c tuples are immutable """
 
-# TODO: put citation
+# https://ui.adsabs.harvard.edu/abs/1989GeCoA..53..197A/abstract
 ANDERS = (
     0.911,
     0.089,
@@ -103,7 +103,7 @@ ANDERS = (
     -20.0,
 )
 
-# TODO: put citation
+# https://ui.adsabs.harvard.edu/abs/2006NuPhA.777....1A/abstract
 ASPLUND = (
     0.9204,
     0.07834,
@@ -206,7 +206,7 @@ ASPLUND = (
     -20.0,
 )
 
-# TODO: put citation
+# https://ui.adsabs.harvard.edu/abs/1998SSRv...85..161G/abstract
 GREVESS = (
     0.9204,
     0.0783,
