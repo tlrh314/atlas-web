@@ -1,0 +1,14 @@
+# Set provider
+
+provider "digitlocean" {
+    token = var.do_token
+}
+
+# Create a server
+resource "digitalocean_droplet" "my-dream-server-1" {
+    image  = "ubuntu-18-04-x64"
+    name   = "web-1"
+    region = "nyc2"
+    size   = "s-1vcpu-1gb"
+    user_data = "I2Nsb3VkLWNvbmZpZwpwYWNrYWdlczoKICAtIGlmdG9wCiAgLSBubW9uCg=="
+}

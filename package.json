@@ -1,0 +1,45 @@
+{
+  "name": "atlas_web",
+  "version": "0.1.0",
+  "description": "The Atlas Web Interface",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.gwdg.de/SOLVe/atlas-web.git"
+  },
+  "author": "Miha Černetič, Timo Halbesma, Veronika Witzke",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "bugs": {
+    "url": "https://gitlab.gwdg.de/SOLVe/atlas-web/-/issues"
+  },
+  "homepage": "https://gitlab.gwdg.de/SOLVe/atlas-web/-/blob/master/README.rst",
+  "dependencies": {
+    "@sentry/browser": "^5.23.0",
+    "bootstrap": "^4.5.3",
+    "cookieconsent": "^3.1.1",
+    "jquery": "^3.5.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.4.7",
+    "browser-sync": "^2.14.0",
+    "cssnano": "^4.1.10",
+    "gulp": "^4.0.0",
+    "gulp-imagemin": "^5.0.3",
+    "gulp-plumber": "^1.2.1",
+    "gulp-postcss": "^8.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^4.0.2",
+    "gulp-uglify-es": "^1.0.4",
+    "pixrem": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "scripts": {
+    "dev": "gulp",
+    "build": "gulp generate-assets"
+  }
+}
