@@ -2,7 +2,7 @@
 # 1. run the test suite for commits to all branches
 # 2. automatically update the website for updates on the master branch
 # Please see the Wiki article for all the details about the setup.
-# https://gitlab.gwdg.de/SOLVe/atlas-web/-/wikis/Development/What-is-this-pipeline-magic%3F-Explain-it-to-me,-please!
+# https://gitlab.gwdg.de/SOLVe/atlas-web/-/wikis/Deployment/Pipelines
 
 default:
   image: docker:latest
