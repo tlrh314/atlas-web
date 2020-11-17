@@ -58,7 +58,7 @@ if env.bool("USE_DEBUG_TOOLBAR", default=False):
 # django-silk
 # ------------------------------------------------------------------------------
 # https://github.com/jazzband/django-silk#installation
-if env.bool("USE_SILK", default=True):
+if env.bool("USE_SILK", default=False):
     INSTALLED_APPS += ["silk"]  # noqa F405
     MIDDLEWARE += ["silk.middleware.SilkyMiddleware"]  # noqa F405
     SILKY_AUTHENTICATION = True
