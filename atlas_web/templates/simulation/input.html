@@ -15,7 +15,7 @@
         to the DOM elements input, label, select, button, etc in the html!
             See e.g. https://docs.djangoproject.com/en/3.1/topics/forms/#working-with-form-templates
         {% endcomment %}
-        {{ form }}
+        {{ form.as_p }}
         <button type="submit">Submit</button>
       </form>
     </div>
