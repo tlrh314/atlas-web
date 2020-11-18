@@ -10,7 +10,7 @@ help: ## This help.
 docker-pull:  ## Pull the latest Docker images from Dockerhub
 	@docker pull python:3.8-slim-buster
 
-django:  ## Build container for Django+Celery
+django:  ## Build image for Django+Celery container
 	@make docker-pull
 	@DOCKER_BUILDKIT=1 docker build \
 		--build-arg BUILDKIT_INLINE_CACHE=1 \
@@ -25,14 +25,15 @@ django:  ## Build container for Django+Celery
 		-f compose/local/django/Dockerfile \
 		-t docker.gitlab.gwdg.de/solve/atlas-web:local .
 
-django-start:  ## Start Django
+django-start:  ## Start Django+Celery
 	@docker-compose -f local.yml up -d django celeryworker
 
-django-stop:  ## Stop Django
+django-stop:  ## Stop Django+Celery
 	@docker-compose -f local.yml stop django celeryworker
 	@docker-compose -f local.yml rm -f django celeryworker
 
-django-restart:  ## Restart Django
+django-restart:  ## Restart Django+Celery
+	@make django
 	@make django-stop
 	@make django-start
 
@@ -48,7 +49,7 @@ django-log:  ## Continously monitor the Django application server log
 		sleep 10; \
 	done
 
-django-run-from-image:  ## Run command in a tmp container from image, but /w database connection
+django-run-from-image:  ## Run command in a tmp container from image, but /w postgres database connection
 	@docker-compose -f local.yml up -d postgres
 	@docker run --network atlas \
 		--env-file .envs/.local/.django \
@@ -77,6 +78,23 @@ stop-all:  ## Stop Django and dependencies
 test:  ## Run the test suite locally
 	@docker exec -it django bash -c "coverage run -m pytest && coverage html && coverage report"
 
+docs:  ## Build the documentation for Read the Docs
+	@DOCKER_BUILDKIT=1 docker build \
+		--build-arg BUILDKIT_INLINE_CACHE=1 \
+		-f compose/local/docs/Dockerfile \
+		-t docker.gitlab.gwdg.de/solve/atlas-web:docs .
+
+docs-start:  ## Start Docs
+	@docker-compose -f local.yml up -d docs
+
+docs-stop:  ## Stop Docs
+	@docker-compose -f local.yml stop docs
+	@docker-compose -f local.yml rm -f docs
+
+docs-restart:  ## Restart Docs
+	@make docs
+	@make docs-stop
+	@make docs-start
 
 production:  ## Build production image (locally) for Django+Celery
 	@make docker-pull

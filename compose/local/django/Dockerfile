@@ -3,7 +3,7 @@ FROM python:3.8-slim-buster as local-build-stage
 # BuildKit allows to mount cache for apt (and pip) to prevent re-downloading every time
 # a full build is required.
 # Sys layer /w build time dependencies
-RUN set -ex \
+RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0755,target=/var/lib/apt set -ex \
   && apt-get update \
   # dependencies for building Python packages
   && apt-get install --no-install-recommends -y build-essential \
@@ -14,7 +14,7 @@ RUN set -ex \
   && rm -rf /var/lib/apt/lists/*
 
 COPY ./requirements /requirements
-RUN set -ex \
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pip set -ex \
   && pip wheel --no-deps --use-feature=2020-resolver --wheel-dir /usr/src/app/wheels \
     -r /requirements/local.txt
 

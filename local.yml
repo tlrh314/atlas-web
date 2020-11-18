@@ -36,7 +36,7 @@ services:
       - ./.envs/.local/.postgres
 
   docs:
-    image: docker.gitlab.gwdg.de/solve/atlas-web:local-docs
+    image: docker.gitlab.gwdg.de/solve/atlas-web:docs
     container_name: docs
     build:
       context: .
