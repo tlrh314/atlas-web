@@ -119,17 +119,17 @@ production-stop:  ## Stop Django+Celery running from the production build
 	@docker-compose -f production.yml rm -f django celeryworker
 
 production-restart:  ## Restart Django+Celery running from the production build
-	# Note that this command relies on a project access token created at
-	# https://gitlab.gwdg.de/SOLVe/atlas-web/-/settings/access_tokens
-	# with scopes read_repository, read_registry, and write_registry. The command
-	# `git remote get-url origin` then shows
-	# https://<username>:<token>@gitlab.gwdg.de/SOLVe/atlas-web where you would
-	# replace <username> and <token> with the real values (i.e. the characters
-	# '<' and '>' are not present in the real origin url.).
-	# Example: https://prototype:secret@gitlab.gwdg.de/SOLVe/atlas-web.
-	#   For Docker authentication+authorization to the registry we used
-	# `docker login docker login docker.gitlab.gwdg.de` once, which saved a hash
-	# of the username (name of the token) and password on disk ~/.docker/config.json.
+	@# Note that this command relies on a project access token created at
+	@# https://gitlab.gwdg.de/SOLVe/atlas-web/-/settings/access_tokens
+	@# with scopes read_repository, read_registry, and write_registry. The command
+	@# `git remote get-url origin` then shows
+	@# https://<username>:<token>@gitlab.gwdg.de/SOLVe/atlas-web where you would
+	@# replace <username> and <token> with the real values (i.e. the characters
+	@# '<' and '>' are not present in the real origin url.).
+	@# Example: https://prototype:secret@gitlab.gwdg.de/SOLVe/atlas-web.
+	@#   For Docker authentication+authorization to the registry we used
+	@# `docker login docker login docker.gitlab.gwdg.de` once, which saved a hash
+	@# of the username (name of the token) and password on disk ~/.docker/config.json.
 	@git pull
 	@docker pull docker.gitlab.gwdg.de/solve/atlas-web:production || true
 	@make production
@@ -137,42 +137,17 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@make production-start
 	@docker push docker.gitlab.gwdg.de/solve/atlas-web:production
 	@docker image prune -f
-	# The last step is to check on localhost that our public-facing container
-	# is responding to requests for the given hostname that Django accepts, and
-	# to return non-zero exit status (--fail) such that the pipeline will fail if
-	# it's not healthy. If you need to debug: remove the -s (silent) flag to see output.
-	# Note that the -k flag is because we curl on https://localhost, but the Let's Encrypt
-	# certificate is only valid for the real host (atlas.halbesma.com).
-	# Note that we assume docker push took sufficiently long for the application server
-	# to start and become responsive. If that is not the case we may need to sleep, e.g. 5s.
-	# @sleep 5
-	@curl -k --fail -s -I -H "Host: atlas.halbesma.com" https://localhost
-	# We can also check the real host, but DNS resolves to the reverse proxy (MPS webserver)
-	# so that might not tell us about problems with the application server (the exposed)
-	# Docker container on localhost.
-	@curl --fail -s -I https://atlas.halbesma.com
-
-
-runner-start:  ## Deploy GitLab runner at Hetzner Cloud
-	@hcloud server create --location nbg1 --ssh-key tlrh314 --type cx11 \
-		--image debian-10 --name atlasgitlabrunner \
-		--user-data-from-file compose/hetzner/runner/cloudinit
-
-ssh-runner:  ## SSH to the Runner VPS at Hetzner Cloud
-	@ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(hcloud server ip atlasgitlabrunner)
-
-destroy-runner:  ## Destroy GitLab runner at Hetzner Cloud
-	@hcloud server shutdown atlasgitlabrunner || true
-	@hcloud server delete atlasgitlabrunner || true
-
-runner-do-start:  ## Deploy GitLab runner at Digital Ocean
-	@doctl compute droplet create dorunner \
-		--user-data-file compose/hetzner/runner/cloudinit --region ams3 --image debian-10-x64 \
-		--size s-1vcpu-1gb
-
-ssh-do-runner:  ## SSH to the Runner VPS at Hetzner Cloud
-	ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(doctl compute droplet get dorunner --format PublicIPv4 | tail -n 1)
-
+	@# The last step is to check on localhost that our public-facing container
+	@# is responding to requests for the given hostname that Django accepts, and
+	@# to return non-zero exit status (--fail) such that the pipeline will fail if
+	@# it's not healthy. If you need to debug: remove the -s (silent) flag to see output.
+	@# Note that the -k flag is because we curl on https://localhost, but the Let's Encrypt
+	@# certificate is only valid for the real host (atlas.halbesma.com).
+	@curl -k --fail -s --connect-timeout 30 -I -H "Host: atlas.halbesma.com" https://localhost
+	@# We can also check the real host, but DNS resolves to the reverse proxy (MPS webserver)
+	@# so that might not tell us about problems with the application server (the exposed)
+	@# Docker container on localhost.
+	@curl --fail --connect-timeout 5 -s -I https://atlas.halbesma.com
 
 prototype-start:  ## Deploy prototype at Hetzner Cloud
 	@hcloud server create --location nbg1 --ssh-key tlrh314 --type cx11 \
@@ -180,7 +155,7 @@ prototype-start:  ## Deploy prototype at Hetzner Cloud
 		--user-data-from-file compose/hetzner/prototype/cloudinit
 
 ssh-prototype:  ## SSH to the prototype VPS
-	@ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(hcloud server ip atlasprototype)
+	@ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(hcloud server ip atlasprototype) || true
 
 destroy-prototype:  ## Destroy prototype at Hetzner Cloud
 	@hcloud server shutdown atlasprototype || true
