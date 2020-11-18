@@ -20,7 +20,6 @@ def simulation_input_view(request):
                 atlas_input_file_content = f.read()
             with open(atlas_input_file_name[1], "r") as f:
                 atlas_input_file_contentt = f.read()
-
             with open(atlas_input_file_name[2], "r") as f:
                 atlas_input_file_contenttt = f.read()
 
