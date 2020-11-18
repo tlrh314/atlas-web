@@ -1,0 +1,40 @@
+# General
+# ------------------------------------------------------------------------------
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=such-secret
+DJANGO_ADMIN_URL=admin
+DJANGO_ALLOWED_HOSTS=atlas.halbesma.com
+
+# Security
+# ------------------------------------------------------------------------------
+# TIP: better off using DNS, however, redirect is OK too
+DJANGO_SECURE_SSL_REDIRECT=False
+
+# Email
+# ------------------------------------------------------------------------------
+DJANGO_SERVER_EMAIL=atlas-web@mps.mpg.de
+DJANGO_EMAIL_URL=smtp+tls://atlas-web@mps.mpg.de:passord@smtp.mps.mpg.de:587
+DJANGO_DEFAULT_FROM_EMAIL=atlas-web@mps.mpg.de
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+WEB_CONCURRENCY=4
+
+# Sentry
+# ------------------------------------------------------------------------------
+SENTRY_DSN=https://f69d04208f6b43ed83308a4b1ef7dccf@sentry.halbesma.com/19
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+CELERY_FLOWER_USER=
+CELERY_FLOWER_PASSWORD=
+
+# Connection strings required in the Django settings module
+DATABASE_URL=postgres://username:password@postgres:5432/atlas_web
+CELERY_BROKER_URL=redis://redis:6379/1

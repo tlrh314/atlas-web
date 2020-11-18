@@ -106,6 +106,11 @@ INSTALLED_APPS += ["anymail"]  # noqa F405
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 ANYMAIL = {}
 
+# EMAIL_CONFIG expands the django-environ connection string for smtp+tls,
+# which should also set the EMAIL_BACKEND to smtp.EmailBackend"
+EMAIL_CONFIG = env.email_url("DJANGO_EMAIL_URL", default="consolemail://")
+vars().update(EMAIL_CONFIG)
+
 
 # LOGGING
 # ------------------------------------------------------------------------------

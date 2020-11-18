@@ -7,6 +7,7 @@ volumes:
 
 x-django: &django
   image: docker.gitlab.gwdg.de/solve/atlas-web:production
+  restart: always
   depends_on:
     - postgres
     - redis
@@ -24,7 +25,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: atlas_web_production_postgres
+    image: docker.gitlab.gwdg.de/solve/atlas-web:postgres
+    restart: always
     volumes:
       - production_postgres_data:/var/lib/postgresql/data:Z
       - production_postgres_data_backups:/backups:z
@@ -35,17 +37,19 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/traefik/Dockerfile
-    image: atlas_web_production_traefik
+    image: docker.gitlab.gwdg.de/solve/atlas-web:traefik
+    restart: always
     depends_on:
       - django
     volumes:
       - production_traefik:/etc/traefik/acme:z
     ports:
       - "0.0.0.0:80:80"
-      - "0.0.0.0:5555:5555"
+      - "0.0.0.0:443:443"
 
   redis:
     image: redis:5.0
+    restart: always
 
   celeryworker:
     <<: *django
