@@ -198,7 +198,7 @@ def create_atlas_input_file_from_valid_form(cleaned_data):
         lines[4] = "molecules on\n"
         lines[5] = "print 0\n"
         lines[6] = "punch 2\n"
-        lines[7] = "vecolities values {}".format(num_velocities)
+        lines[7] = "velocities values {}".format(num_velocities)
         for vel in vel_list:
             lines[7] += " {:.1f}".format(vel)
         lines[7] += "\n"
