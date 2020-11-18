@@ -130,7 +130,7 @@ test_in_venv:
     # Not using postgres, so we don't install the sys binaries. Do not want to
     # install psycopg2 through pip (and can't without sys binaries).
     - sed -i.bak -e "s/psycopg2=.*/# psycopg2/g" requirements/local.txt
-    - pip install --use-feature=2020-resolver -r requirements/local.txt
+    - time (pip install --use-feature=2020-resolver -r requirements/local.txt > /dev/null 2>&1) 
     # Tell the database connection string to use sqlite3 rather than postgres
     - sed -i.bak -e "s/DATABASE_URL=.*/DATABASE_URL=sqlite:\/\/\/test.db/g" .envs/.local/.django
     # Setup the Django application

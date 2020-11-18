@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:experimental
 FROM python:3.8-slim-buster as local-build-stage
 
 # BuildKit allows to mount cache for apt (and pip) to prevent re-downloading every time
