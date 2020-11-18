@@ -130,12 +130,19 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@#   For Docker authentication+authorization to the registry we used
 	@# `docker login docker login docker.gitlab.gwdg.de` once, which saved a hash
 	@# of the username (name of the token) and password on disk ~/.docker/config.json.
+	@echo -e "\n\033[0;35mPulling in latest changes on master\033[0;49m\n"
 	@git pull
+	@echo -e "\n\033[0;35mPulling in latest image from registry\033[0;49m\n"
 	@docker pull docker.gitlab.gwdg.de/solve/atlas-web:production || true
+	@echo -e "\n\033[0;35mBuilding new production image /w latest code on master\033[0;49m\n"
 	@make production
+	@echo -e "\n\033[0;35mStopping the running Django+Celery containers\033[0;49m\n"
 	@make production-stop
+	@echo -e "\n\033[0;35mStarting the running Django+Celery containers from our newly build image\033[0;49m\n"
 	@make production-start
+	@echo -e "\n\033[0;35mPushing the latest production build to our registry\033[0;49m\n"
 	@docker push docker.gitlab.gwdg.de/solve/atlas-web:production
+	@echo -e "\n\033[0;35mCleaning up dangling images\033[0;49m\n"
 	@docker image prune -f
 	@# The last step is to check on localhost that our public-facing container
 	@# is responding to requests for the given hostname that Django accepts, and
@@ -143,10 +150,12 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@# it's not healthy. If you need to debug: remove the -s (silent) flag to see output.
 	@# Note that the -k flag is because we curl on https://localhost, but the Let's Encrypt
 	@# certificate is only valid for the real host (atlas.halbesma.com).
+	@echo -e "\n\033[0;35mChecking if our Django container is ready to serve\033[0;49m\n"
 	@curl -k --fail -s --connect-timeout 30 -I -H "Host: atlas.halbesma.com" https://localhost
 	@# We can also check the real host, but DNS resolves to the reverse proxy (MPS webserver)
 	@# so that might not tell us about problems with the application server (the exposed)
 	@# Docker container on localhost.
+	@echo -e "\n\033[0;35mChecking if our public domain is healthy\033[0;49m\n"
 	@curl --fail --connect-timeout 5 -s -I https://atlas.halbesma.com
 
 prototype-start:  ## Deploy prototype at Hetzner Cloud
