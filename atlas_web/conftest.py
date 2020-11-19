@@ -25,3 +25,26 @@ def admin() -> User:
     admin.set_password("admin_password")
     admin.save()
     return admin
+
+
+@pytest.fixture
+def valid_simulation_input_data() -> dict:
+    return {
+        "calculation_type": "odf",
+        "abundances": "anders",
+        "metallicity": "1",
+        "T_eff": "5500",
+        "log_G": "1",
+        "vturb": "2",
+        "convection": "on",
+        "mixing_length": "2",
+        "wavelength_start": "100",
+        "wavelength_end": "900",
+        "wavelength_step": "900",
+        "T_start": "1500",
+        "T_end": "1500",
+        "T_n": "25",
+        "p_start": "-3",
+        "p_end": "8",
+        "p_n": "25",
+    }

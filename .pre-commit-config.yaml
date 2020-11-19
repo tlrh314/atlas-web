@@ -8,6 +8,7 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        exclude: '.svg|.css|.min.js|.min.map|.js.map'
       - id: check-yaml
 
   - repo: https://github.com/psf/black

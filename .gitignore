@@ -291,3 +291,10 @@ atlas_web/static/vendor
 .local
 .pki
 .python_history
+
+wiki
+
+# Atlas Code input files
+atlas9.control
+atlas9.inODF
+atlas9.punched.input

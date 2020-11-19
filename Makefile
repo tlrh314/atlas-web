@@ -158,6 +158,9 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@echo -e "\n\033[0;35mChecking if our public domain is healthy\033[0;49m\n"
 	@curl --fail -s -I https://atlas.halbesma.com
 
+remove-pycache:  ## Recursively clean pycache in path
+	find .  ! -path "."  -type d -name '__pycache__' -exec rm -rvf {} \;
+
 prototype-start:  ## Deploy prototype at Hetzner Cloud
 	@hcloud server create --location nbg1 --ssh-key tlrh314 --type cx11 \
 		--image debian-10 --name atlasprototype \
