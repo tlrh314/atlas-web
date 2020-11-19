@@ -75,7 +75,7 @@ log-all:  ## Continously monitor all containers
 stop-all:  ## Stop Django and dependencies
 	@docker-compose -f local.yml down
 
-test:  ## Run the test suite locally
+test:  ## Run the test suite (locally)
 	@docker exec -it django bash -c "coverage run -m pytest && coverage html && coverage report"
 
 docs:  ## Build the documentation for Read the Docs
@@ -96,7 +96,7 @@ docs-restart:  ## Restart Docs
 	@make docs-stop
 	@make docs-start
 
-production:  ## Build production image (locally) for Django+Celery
+production:  ## Build production image for Django+Celery
 	@make docker-pull
 	@DOCKER_BUILDKIT=1 docker build \
 		--build-arg BUILDKIT_INLINE_CACHE=1 \
@@ -160,6 +160,11 @@ production-restart:  ## Restart Django+Celery running from the production build
 
 remove-pycache:  ## Recursively clean pycache in path
 	find .  ! -path "."  -type d -name '__pycache__' -exec rm -rvf {} \;
+
+remove-buildkit-cache:  ## Clear the BuildKit cache
+	@docker builder prune --filter type=exec.cachemount
+	@echo "If prune of BuildKit cache /w cachemount filter still leaves too much dangling"
+	@echo "cache such that your Docker data storage is still full, dare prune w/o filter"
 
 prototype-start:  ## Deploy prototype at Hetzner Cloud
 	@hcloud server create --location nbg1 --ssh-key tlrh314 --type cx11 \
