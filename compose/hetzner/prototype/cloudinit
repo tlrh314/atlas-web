@@ -53,9 +53,9 @@ runcmd:
   # install docker-compose following the guide: https://docs.docker.com/compose/install/
   - sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
-  - docker login -u tlrh314 --password SQvTxzaCC1xs-gK1p6Ag docker.gitlab.gwdg.de
+  - docker login -u prototype --password 9ggkG_tviadHpBp2YXqd docker.gitlab.gwdg.de
   - docker pull docker.gitlab.gwdg.de/solve/atlas-web:local-development
-  - git clone https://tlrh314:SQvTxzaCC1xs-gK1p6Ag@gitlab.gwdg.de/SOLVe/atlas-web /home/tlrh314/atlas-web
+  - git clone https://prototype:9ggkG_tviadHpBp2YXqd@gitlab.gwdg.de/SOLVe/atlas-web /home/tlrh314/atlas-web
   - cd /home/tlrh314/atlas-web
   - git checkout development
   - mkdir .envs/.production
