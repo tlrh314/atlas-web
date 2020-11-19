@@ -47,7 +47,7 @@ django-log:  ## Continously monitor the Django application server log
 	@while true; do \
 		docker logs -f --tail 1 django; \
 		sleep 10; \
-	done
+	done || true
 
 django-run-from-image:  ## Run command in a tmp container from image, but /w postgres database connection
 	@docker-compose -f local.yml up -d postgres
@@ -70,7 +70,7 @@ log-all:  ## Continously monitor all containers
 	@while true; do \
 		docker-compose -f local.yml logs -f --tail 1; \
 		sleep 10; \
-	done
+	done || true
 
 stop-all:  ## Stop Django and dependencies
 	@docker-compose -f local.yml down
