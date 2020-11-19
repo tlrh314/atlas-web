@@ -23,9 +23,17 @@
     {% if atlas_input_file_content %}
     <div class="mt-5">
       Your input is valid. Below sits the Atlas input file, please verify that this is correct.
-
+      <br>atlas9.punched.input
       <p>
         {{ atlas_input_file_content|linebreaks }}
+      </p>
+	    atlas9.inODF
+      <p>
+        {{ atlas_input_file_contentt|linebreaks }}
+      </p>
+	    atlas9.control
+      <p>
+        {{ atlas_input_file_contenttt|linebreaks }}
       </p>
     </div>
     {% endif %}

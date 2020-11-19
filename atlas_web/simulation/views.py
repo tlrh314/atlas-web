@@ -7,18 +7,22 @@ from atlas_web.simulation.utils import create_atlas_input_file_from_valid_form
 
 def simulation_input_view(request):
     atlas_input_file_content = None
+    atlas_input_file_contentt = None
+    atlas_input_file_contenttt = None
 
     if request.method == "POST":
         form = SimulationForm(data=request.POST)
         if form.is_valid():
-            name = form.cleaned_data["name"]
-            print(_("Your name is {}, we're happy".format(name)))
-
             atlas_input_file_name = create_atlas_input_file_from_valid_form(
                 form.cleaned_data
             )
-            with open(atlas_input_file_name, "r") as f:
+            with open(atlas_input_file_name[0], "r") as f:
                 atlas_input_file_content = f.read()
+            with open(atlas_input_file_name[1], "r") as f:
+                atlas_input_file_contentt = f.read()
+            with open(atlas_input_file_name[2], "r") as f:
+                atlas_input_file_contenttt = f.read()
+
     else:
         form = SimulationForm()
 
@@ -28,5 +32,10 @@ def simulation_input_view(request):
     return render(
         request,
         "simulation/input.html",
-        {"form": form, "atlas_input_file_content": atlas_input_file_content},
+        {
+            "form": form,
+            "atlas_input_file_content": atlas_input_file_content,
+            "atlas_input_file_contentt": atlas_input_file_contentt,
+            "atlas_input_file_contenttt": atlas_input_file_contenttt,
+        },
     )
