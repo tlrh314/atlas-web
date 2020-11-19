@@ -15,7 +15,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DetailView, RedirectView, UpdateView
 
-from atlas_web.users.forms import UserCreationForm
+from atlas_web.users.forms import UserAuthenticationForm, UserCreationForm
 
 User = get_user_model()
 
@@ -40,6 +40,8 @@ class UserRegisterView(CreateView):
 
 class UserLoginView(LoginView):
     template_name = "users/login.html"
+    authentication_form = UserAuthenticationForm
+    redirect_authenticated_user = True
 
 
 class UserLogoutView(LogoutView):
@@ -54,7 +56,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = User
-    fields = ["name"]
+    fields = ["email"]
 
     def get_success_url(self):
         return reverse("users:detail", kwargs={"pk": self.request.user.pk})

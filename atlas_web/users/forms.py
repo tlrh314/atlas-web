@@ -1,6 +1,7 @@
 # from captcha.fields import CaptchaField
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm as DefaultAuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as DefaultUserCreationForm
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
@@ -44,6 +45,10 @@ class UserCreationForm(DefaultUserCreationForm):
 
         # TODO: push to Slack: "Hey admin, md5(user.email.lower()) signed up! Please verify/reject?
         return user
+
+
+class UserAuthenticationForm(DefaultAuthenticationForm):
+    pass
 
 
 class UserAdminChangeForm(admin_forms.UserChangeForm):
