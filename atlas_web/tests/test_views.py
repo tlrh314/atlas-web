@@ -42,6 +42,14 @@ class BaseViewTestCase(TestCase):
             status_code=200,
         )
 
+    def test_url_to_privacy_view_in_base_cookie_notice_in_base_template(self):
+        response = self.client.get(reverse("home"))
+        self.assertContains(
+            response,
+            '"href": "/privacy/"',
+            status_code=200,
+        )
+
     def test_about(self):
         url = reverse("about")
         response = self.client.get(url)

@@ -1,0 +1,9 @@
+{% load i18n %}{% autoescape off %}{% trans 'Dear' %} {{ user }},
+
+{% blocktrans %}
+Welcome to the atlas-web interface.
+
+Kind regards,
+Veronika Witzke
+{% endblocktrans %}
+{% endautoescape %}
