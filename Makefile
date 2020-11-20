@@ -144,6 +144,8 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@docker push docker.gitlab.gwdg.de/solve/atlas-web:production
 	@echo -e "\n\033[0;35mCleaning up dangling images\033[0;49m\n"
 	@docker image prune -f
+	@echo -e "\n\033[0;35mMigrate the database\033[0;49m\n"
+	@docker exec django python manage.py migrate
 	@# The last step is to check on localhost that our public-facing container
 	@# is responding to requests for the given hostname that Django accepts, and
 	@# to return non-zero exit status (--fail) such that the pipeline will fail if
