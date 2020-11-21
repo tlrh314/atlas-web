@@ -28,81 +28,11 @@ before_script:
   - (ssh-keyscan -t rsa ${PROTOTYPE_IP} >> ~/.ssh/known_hosts) > /dev/null 2>&1
 
 stages:
-#  - build
    - test
    - pages
-#  - release
    - deploy
 
-# Building in CI requires dind, which implies GitLab Runner /w Docker executor
-# in privileged mode. Note that GWDG-Runner-2 is not set up in privileged mode
-# and does not have support for dind as it could lead to privilege escallation
-# and naturally GWDG sys adminds protect their systems against that.
-.build_local:
-  stage: build
-  tags:
-    - docker
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $BUILD_CACHE || true
-    - docker pull $TEST_IMAGE || true
-
-    - DOCKER_BUILDKIT=1 docker build
-        --build-arg BUILDKIT_INLINE_CACHE=1
-        --cache-from $BUILD_CACHE
-        --target local-build-stage
-        -f compose/local/django/Dockerfile
-        -t $BUILD_CACHE .
-
-    - DOCKER_BUILDKIT=1 docker build
-        --build-arg BUILDKIT_INLINE_CACHE=1
-        --cache-from $BUILD_CACHE
-        --cache-from $TEST_IMAGE
-        -f compose/local/django/Dockerfile
-        -t $TEST_IMAGE .
-
-    - docker push $BUILD_CACHE
-    - docker push $TEST_IMAGE
-
-# Testing in CI using our local docker image would require a Docker build of
-# said image, but see remark about build_local above for the GWDG GitLab Runner.
-.test_with_docker:
-  stage: test
-  needs: ["build_local"]
-  tags:
-    - docker
-  variables:
-    POSTGRES_USER: 'atlas_web'
-    POSTGRES_PASSWORD: ''
-    POSTGRES_DB: 'test_atlas_web'
-    POSTGRES_HOST_AUTH_METHOD: trust
-    CELERY_BROKER_URL: 'redis://redis:6379/0'
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $TEST_IMAGE
-  script:
-    - docker run -d --name postgres --env-file './.envs/.local/.postgres' postgres:12.3 || true
-    - docker ps -a || true
-    - docker run --rm --entrypoint=""
-        --env-file '.envs/.local/.django'
-        --env-file '.envs/.local/.postgres'
-        -v"$(pwd):/app"
-        --link=postgres:postgres
-        $TEST_IMAGE
-        bash -c 'python manage.py collectstatic --noinput && 
-          coverage run -m pytest && coverage html && coverage report'
-  coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
-  artifacts:
-    paths:
-      - htmlcov
-    expire_in: 15 minutes
-
-# Testing in CI can of course be done /w Docker executor non-privileged (i.e. w/o dind)
+# Testing in CI can done /w Docker executor non-privileged (i.e. w/o dind)
 # running the python:3.8-slim-buster image. We then test against an sqlite3 database 
 # and assume for all practical purposes Django's ORM handles differences between the 
 # database backend internally. In principle there could be edge cases due to underlying
@@ -140,14 +70,14 @@ test_in_venv:
   # - apt-get update -y && apt-get install -y gettext
   # - python manage.py compilemessages --ignore venv
   script:
-    - coverage run -m pytest
+    - pytest -n 4 --cov
     - coverage html
     - coverage report
   coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
   artifacts:
     paths:
       - htmlcov
-    expire_in: 15 minutes
+    expire_in: 60 minutes
 
 pages:
   stage: pages
@@ -164,26 +94,7 @@ pages:
   only:
     - master
 
-# Release in CI would be the strategy if a production build on master was build
-# in CI, but see remark about build /w dind for the GWDG GitLab Runner.
-.release:
-  stage: release
-  tags:
-    - GWDG-Runner-2
-  variables:
-    GIT_STRATEGY: none
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $BUILD_IMAGE
-    - docker tag $BUILD_IMAGE $RELEASE_IMAGE
-    - docker push $RELEASE_IMAGE
-  only:
-    - master
-
-# Deploy now simply builds the latest production image at the production server,
+# Deploy builds the latest production image at the production server,
 # and then stop+rm the Django+Celery containers and restarts Django+Celery. Note
 # that we assume that Traefik, Postgres, and Redis need not be restarted.
 # 
