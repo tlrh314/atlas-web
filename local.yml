@@ -23,6 +23,21 @@ services:
       - "8000:8000"
     command: ["/start"]
 
+  notebook:
+    <<: *django
+    container_name: notebook
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    environment:
+      JUPYTER_CONFIG_DIR: "/app/.jupyter"
+      JUPYTER_DATA_DIR: "/app/.jupyter"
+      JUPYTER_RUNTIME_DIR: "/tmp/runtime"
+      DJANGO_ALLOW_ASYNC_UNSAFE: "True"
+    command: ["python", "manage.py", "shell_plus", "--notebook"]
+    ports:
+      - "8888:8888"
+
   postgres:
     build:
       context: .

@@ -9,7 +9,9 @@ psycopg2==2.8.6  # https://github.com/psycopg/psycopg2
 mypy==0.790  # https://github.com/python/mypy
 django-stubs==1.7.0  # https://github.com/typeddjango/django-stubs
 pytest==6.1.2  # https://github.com/pytest-dev/pytest
+pytest-cov==2.10.1  # https://github.com/pytest-dev/pytest-cov
 pytest-sugar==0.9.4  # https://github.com/Frozenball/pytest-sugar
+pytest-xdist==2.1.0  # https://github.com/pytest-dev/pytest-xdist
 
 # Documentation
 # ------------------------------------------------------------------------------
@@ -35,3 +37,5 @@ django-silk==4.1.0  # https://github.com/jazzband/django-silk
 django-extensions==3.0.9  # https://github.com/django-extensions/django-extensions
 django-coverage-plugin==1.8.0  # https://github.com/nedbat/django_coverage_plugin
 pytest-django==4.1.0  # https://github.com/pytest-dev/pytest-django
+
+notebook  # https://github.com/jupyter/notebook

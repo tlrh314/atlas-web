@@ -37,6 +37,18 @@ django-restart:  ## Restart Django+Celery
 	@make django-stop
 	@make django-start
 
+notebook-start:  ## Start a Jupyter Notebook /w access to our Django app and postgres database
+	@docker-compose -f local.yml up -d notebook
+
+notebook-stop:  ## Stop the Jupyter Notebook
+	@docker-compose -f local.yml stop notebook
+	@docker-compose -f local.yml rm -f notebook
+
+notebook-restart:  ## Restart the Jupyter Notebook
+	@make django
+	@make notebook-stop
+	@make notebook-start
+
 bash:  ## Open an interactive bash shell in the django container
 	@docker exec -it django bash
 
@@ -59,7 +71,6 @@ django-run-from-image:  ## Run command in a tmp container from image, but /w pos
 		docker.gitlab.gwdg.de/solve/atlas-web:local \
 		bash -c "python manage.py makemigrations users"
 
-
 django-sites-fix:  ## Set the correct Site instance (locally)
 	@docker exec django python manage.py shell -c \
 		"from django.contrib.sites.models import Site; print(Site.objects.all()); \
@@ -76,7 +87,7 @@ stop-all:  ## Stop Django and dependencies
 	@docker-compose -f local.yml down
 
 test:  ## Run the test suite (locally)
-	@docker exec -it django bash -c "coverage run -m pytest && coverage html && coverage report"
+	@docker exec -it django bash -c "pytest -n 4 --cov && coverage html && coverage report"
 
 docs:  ## Build the documentation for Read the Docs
 	@DOCKER_BUILDKIT=1 docker build \

@@ -91,5 +91,19 @@ from .filebrowser import *  # noqa isort:skip
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-eager-propagates
 CELERY_TASK_EAGER_PROPAGATES = True
+
 # atlas-web
 # ------------------------------------------------------------------------------#
+
+# Tweaks for the iPython notebook
+SHELL_PLUS = "ipython"
+SHELL_PLUS_PRINT_SQL = True
+
+NOTEBOOK_ARGUMENTS = [
+    "--ip",
+    "0.0.0.0",
+    "--port",
+    "8888",
+    "--no-browser",
+]
+IPYTHON_KERNEL_DISPLAY_NAME = "Django"
