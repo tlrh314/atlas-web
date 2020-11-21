@@ -196,7 +196,7 @@ deploy:
   script:
     - ssh ${PROTOTYPE_USER}@${PROTOTYPE_IP} -p22
       -o preferredAuthentications=publickey -i  ~/.ssh/id_rsa.pub
-      "cd atlas-web && make production-restart"
+      "cd atlas-web && git pull && make production-restart"
   environment:
     name: prototype
     url: https://atlas.halbesma.com
