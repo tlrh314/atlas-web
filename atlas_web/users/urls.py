@@ -22,7 +22,7 @@ urlpatterns = [
     path("logout/", user_logout_view, name="logout"),
     path("redirect/", view=user_redirect_view, name="redirect"),
     path("update/", view=user_update_view, name="update"),
-    path("<str:pk>/", view=user_detail_view, name="detail"),
+    path("detail/<str:pk>/", view=user_detail_view, name="detail"),
     path("password_change/", user_password_change, name="password_change"),
     path(
         "password_change/done/",
@@ -40,12 +40,12 @@ urlpatterns = [
         name="password_reset_done",
     ),
     path(
-        "reset/<uidb64>/<token>/",
+        "password_reset_confirm/<uidb64>/<token>/",
         user_password_reset_confirm,
         name="password_reset_confirm",
     ),
     path(
-        "reset/done/",
+        "password_reset_complete/",
         user_password_reset_complete,
         name="password_reset_complete",
     ),

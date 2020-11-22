@@ -1,7 +1,7 @@
 from captcha.fields import CaptchaField
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm as DefaultAuthenticationForm
+from django.contrib.auth.forms import PasswordResetForm as DefaultPasswordResetForm
 from django.contrib.auth.forms import UserCreationForm as DefaultUserCreationForm
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
@@ -47,8 +47,14 @@ class UserCreationForm(DefaultUserCreationForm):
         return user
 
 
-class UserAuthenticationForm(DefaultAuthenticationForm):
-    pass
+class UserPasswordResetForm(DefaultPasswordResetForm):
+    """ This form is used in the frontend, for public signup at the website """
+
+    captcha = CaptchaField()
+
+    class Meta:
+        model = User
+        fields = ("email", "captcha")
 
 
 class UserAdminChangeForm(admin_forms.UserChangeForm):

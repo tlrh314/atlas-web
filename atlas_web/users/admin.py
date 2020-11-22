@@ -3,11 +3,17 @@ from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django_celery_beat.models import ClockedSchedule, IntervalSchedule, SolarSchedule
 
-from atlas_web.users.forms import UserAdminChangeForm, UserAdminCreationForm
+from atlas_web.users.forms import (
+    UserAdminChangeForm,
+    UserAdminCreationForm,
+    UserPasswordResetForm,
+)
 
 User = get_user_model()
 
@@ -27,7 +33,7 @@ class UserAdmin(auth_admin.UserAdmin):
     ]
     list_filter = ["is_active", "is_validated", "is_staff", "is_superuser"]
     search_fields = ["email", "first_name", "last_name"]
-    actions = ["validate_user"]
+    actions = ["validate_user", "send_password_reset"]
 
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
@@ -96,6 +102,27 @@ class UserAdmin(auth_admin.UserAdmin):
     validate_user.short_description = _(
         "Mark users as validated and send an automated welcome email to inform them."
     )
+
+    def send_password_reset(self, request, queryset):
+        for user in queryset:
+            try:
+                validate_email(user.email)
+                form = UserPasswordResetForm(data={"email": user.email})
+                form.is_valid()
+
+                form.save(
+                    email_template_name="users/password_forced_reset_email.html",
+                    extra_email_context={"full_name": user.get_full_name()},
+                )
+                self.message_user(request, _("Succesfully sent password reset email."))
+            except ValidationError:
+                self.message_user(
+                    request,
+                    _("User does not have a valid email address"),
+                    level="error",
+                )
+
+    send_password_reset.short_description = _("Send password reset link")
 
 
 # We hide the this Site thingy from Django's Sites framework b/c it'll be confusing

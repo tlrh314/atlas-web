@@ -4,6 +4,6 @@
 Welcome to the atlas-web interface.
 
 Kind regards,
-Veronika Witzke
+The atlas-web team
 {% endblocktrans %}
 {% endautoescape %}

@@ -10,7 +10,7 @@
       <div class="card-body">
         {% if form.errors %}
         <div class="alert alert-danger" role="alert">
-          {{ form.errors|striptags }}
+          {{ form.errors }}
         </div>
         {% endif %}
         <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
@@ -18,14 +18,12 @@
           <div class="form-group">
             <div class="form-label-group">
               <input type="email" id="id_username" name="username" class="form-control" placeholder="{% trans 'Email address' %}" required="required" autofocus="autofocus" autocomplete="username" maxlength="254">
-              <label for="id_username">{% trans "Email address" %}</label>
             </div>
           </div>
 
           <div class="form-group">
             <div class="form-label-group">
               <input type="password" id="id_password" name="password" class="form-control" placeholder="{% trans 'Password' %}" required="required">
-              <label for="id_password">{% trans "Password" %}</label>
             </div>
           </div>
 

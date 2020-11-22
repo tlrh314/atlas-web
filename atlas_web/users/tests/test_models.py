@@ -60,4 +60,4 @@ def test_user_get_absolute_url(user: User):
     the button in the admin that allows you to visit the user's profile page if you look at the detail view
     of one specific user instance.
     """
-    assert user.get_absolute_url() == f"/users/{user.id}/"
+    assert user.get_absolute_url() == f"/users/detail/{user.id}/"

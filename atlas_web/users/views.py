@@ -15,12 +15,14 @@ from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DetailView, RedirectView, UpdateView
 
-from atlas_web.users.forms import UserAuthenticationForm, UserCreationForm
+from atlas_web.users.forms import UserCreationForm, UserPasswordResetForm
 
 User = get_user_model()
 
 
 class UserRegisterView(CreateView):
+    """ Public-facing and sends out emails on POST success --> protected /w captcha """
+
     form_class = UserCreationForm
     template_name = "users/register.html"
     success_url = reverse_lazy("users:redirect")
@@ -39,8 +41,9 @@ class UserRegisterView(CreateView):
 
 
 class UserLoginView(LoginView):
+    """ Public-facing, but does not send out emails --> not protected /w captcha """
+
     template_name = "users/login.html"
-    authentication_form = UserAuthenticationForm
     redirect_authenticated_user = True
 
 
@@ -55,8 +58,10 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
+    """ Password-protected, and POST success does not send email --> not protected /w captcha """
+
     model = User
-    fields = ["email"]
+    fields = ["email", "first_name", "last_name"]
 
     def get_success_url(self):
         return reverse("users:detail", kwargs={"pk": self.request.user.pk})
@@ -66,7 +71,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         messages.add_message(
-            self.request, messages.INFO, _("Infos successfully updated")
+            self.request, messages.SUCCESS, _("Infos successfully updated")
         )
         return super().form_valid(form)
 
@@ -79,6 +84,8 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 
 class UserPasswordChangeView(PasswordChangeView):
+    """ Password-protected, and POST success does not send email --> not protected /w captcha """
+
     template_name = "users/password_change_form.html"
     success_url = reverse_lazy("users:password_change_done")
 
@@ -88,12 +95,16 @@ class UserPasswordChangeDoneView(PasswordChangeDoneView):
 
 
 class UserPasswordResetView(PasswordResetView):
-    """ This view sends the first email with a reset token """
+    """
+    Public-facing and sends out emails on POST success --> protected /w captcha
+    This view sends the first email with a reset token to the user email address.
+    """
 
     template_name = "users/password_reset_form.html"
     email_template_name = "users/password_reset_email.html"
     subject_template_name = "users/password_reset_subject.txt"
     success_url = reverse_lazy("users:password_reset_done")
+    form_class = UserPasswordResetForm
 
     def form_valid(self, form):
         valid = super().form_valid(form)
