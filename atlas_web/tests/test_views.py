@@ -38,7 +38,7 @@ class BaseViewTestCase(TestCase):
         self.assertTemplateUsed(response, "pages/home.html")
         self.assertContains(
             response,
-            "Use this document as a way to quick start any new project.",
+            "Welcome to the atlas-web interface to submit atlas9 simulations :-)",
             status_code=200,
         )
 
@@ -56,7 +56,7 @@ class BaseViewTestCase(TestCase):
         self.assertTemplateUsed(response, "pages/about.html")
         self.assertContains(
             response,
-            "We can change what sits on the about page in the content block.",
+            "This is the About atlas-web page.",
             status_code=200,
         )
 

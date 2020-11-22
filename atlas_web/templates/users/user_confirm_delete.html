@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{{ block.super }} | Delete account{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "Delete account" %}</div>
+        <div class="card-body">
+            {% if request.user.pk == object.pk %}
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+              {{ form.errors }}
+            </div>
+            {% endif %}
+            <form method="post">{% csrf_token %}
+                <div class="text-center">
+                  {% trans "Are you sure you want to delete the atlas-web account" %} <strong>{{ object }}</strong>?
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <button class="btn btn-success" onclick="window.history.back();">{% trans "Back" %}</button>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <button type="submit" class="btn btn-danger">{% trans "Delete my account" %}</button>
+                    </div>
+                </div>
+            </form>
+          {% else %}
+            {% trans "Permission denied." %}
+          {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

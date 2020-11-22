@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load static i18n %}
 
-{% block title %}{{ block.super }} | {% trans "Server error (500) " %}{% endblock %}
+{% block title %}{{ block.super }} | {% trans "Bad request (400) " %}{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="card card-login mx-auto mt-5 mb-3">
-        <div class="card-header">{% trans "Server error" %}</div>
+        <div class="card-header">{% trans "Bad request" %}</div>
         <div class="card-body">
             {% blocktrans %}
             We track these errors automatically, but if the problem persists feel free to contact us.

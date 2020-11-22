@@ -4,11 +4,11 @@
 {% block title %}{{ block.super }} | {% trans "Profile" %}{% endblock %}
 
 {% block content %}
-{% if request.user.is_authenticated %}
 <div class="container">
     <div class="card card-login mx-auto mt-5 mb-3">
         <div class="card-header">{% trans "Profile" %}</div>
         <div class="card-body">
+          {% if request.user.pk == object.pk %}
           <table class="table">
             <tbody>
               <tr>
@@ -26,10 +26,14 @@
             </tbody>
           </table>
          <div class="row align-items-center justify-content-center">
-            <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">{% trans "Change" %}</a>
+            <a class="btn btn-primary mx-2" href="{% url 'users:update' %}" role="button">{% trans "Change info" %}</a>
+            <a class="btn btn-primary mx-2" href="{% url 'users:password_change' %}" role="button">{% trans "Change password" %}</a>
+            <a class="btn btn-danger mx-2" href="{% url 'users:delete' request.user.pk %}" role="button">{% trans "Delete account" %}</a>
           </div>
+          {% else %}
+            {% trans "Permission denied." %}
+          {% endif %}
         </div>
     </div>
 </div>
-{% endif %}
 {% endblock content %}

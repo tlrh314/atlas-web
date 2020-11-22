@@ -11,9 +11,16 @@ from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetView,
 )
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import CreateView, DetailView, RedirectView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    RedirectView,
+    UpdateView,
+)
 
 from atlas_web.users.forms import UserCreationForm, UserPasswordResetForm
 
@@ -26,6 +33,8 @@ class UserRegisterView(CreateView):
     form_class = UserCreationForm
     template_name = "users/register.html"
     success_url = reverse_lazy("users:redirect")
+
+    # TODO: put email confirmation link in the email
 
     def form_valid(self, form):
         valid = super().form_valid(form)
@@ -49,12 +58,18 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LogoutView):
     template_name = "users/logged_out.html"
+    next_page = reverse_lazy("users:login")
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
     model = User
     slug_field = "pk"
     slug_url_kwarg = "pk"
+
+    def dispatch(self, request, *args, **kwargs):
+        if str(request.user.pk) != str(kwargs.get("pk", None)):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
@@ -71,9 +86,27 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         messages.add_message(
-            self.request, messages.SUCCESS, _("Infos successfully updated")
+            self.request, messages.SUCCESS, _("Info successfully updated")
         )
         return super().form_valid(form)
+
+
+class UserDeleteView(DeleteView):
+    model = User
+    slug_field = "pk"
+    slug_url_kwarg = "pk"
+    success_url = reverse_lazy("users:register")
+
+    def dispatch(self, request, *args, **kwargs):
+        if str(request.user.pk) != str(kwargs.get("pk", None)):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        messages.add_message(
+            self.request, messages.SUCCESS, _("Your account was succesfully deleted")
+        )
+        return super().delete(request, *args, **kwargs)
 
 
 class UserRedirectView(LoginRequiredMixin, RedirectView):
@@ -87,7 +120,13 @@ class UserPasswordChangeView(PasswordChangeView):
     """ Password-protected, and POST success does not send email --> not protected /w captcha """
 
     template_name = "users/password_change_form.html"
-    success_url = reverse_lazy("users:password_change_done")
+    success_url = reverse_lazy("users:redirect")
+
+    def form_valid(self, form):
+        messages.add_message(
+            self.request, messages.SUCCESS, _("Password change success!")
+        )
+        return super().form_valid(form)
 
 
 class UserPasswordChangeDoneView(PasswordChangeDoneView):
@@ -102,6 +141,8 @@ class UserPasswordResetView(PasswordResetView):
 
     template_name = "users/password_reset_form.html"
     email_template_name = "users/password_reset_email.html"
+    # TODO: dispatch? /w request.users.full_name
+    # extra_email_context = {"full_name": "request.user.full_name"}
     subject_template_name = "users/password_reset_subject.txt"
     success_url = reverse_lazy("users:password_reset_done")
     form_class = UserPasswordResetForm
@@ -123,7 +164,14 @@ class UserPasswordResetConfirmView(PasswordResetConfirmView):
     """ This view is when the user clicks the password reset link to choose a new password """
 
     template_name = "users/password_reset_confirm.html"
-    success_url = reverse_lazy("users:password_reset_complete")
+    success_url = reverse_lazy("users:redirect")
+    post_reset_login = True
+
+    def form_valid(self, form):
+        messages.add_message(
+            self.request, messages.SUCCESS, _("Passsword reset success!")
+        )
+        return super().form_valid(form)
 
 
 class UserPasswordResetCompleteView(PasswordResetCompleteView):
@@ -136,6 +184,7 @@ user_login_view = UserLoginView.as_view()
 user_logout_view = UserLogoutView.as_view()
 user_detail_view = UserDetailView.as_view()
 user_update_view = UserUpdateView.as_view()
+user_delete_view = UserDeleteView.as_view()
 user_redirect_view = UserRedirectView.as_view()
 user_password_change = UserPasswordChangeView.as_view()
 user_password_change_done = UserPasswordChangeDoneView.as_view()

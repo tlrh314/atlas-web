@@ -1,6 +1,7 @@
 from django.urls import path
 
 from atlas_web.users.views import (
+    user_delete_view,
     user_detail_view,
     user_login_view,
     user_logout_view,
@@ -22,6 +23,7 @@ urlpatterns = [
     path("logout/", user_logout_view, name="logout"),
     path("redirect/", view=user_redirect_view, name="redirect"),
     path("update/", view=user_update_view, name="update"),
+    path("delete/<str:pk>/", view=user_delete_view, name="delete"),
     path("detail/<str:pk>/", view=user_detail_view, name="detail"),
     path("password_change/", user_password_change, name="password_change"),
     path(

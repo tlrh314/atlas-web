@@ -52,7 +52,7 @@ if settings.DEBUG:
         path(
             "400/",
             default_views.bad_request,
-            kwargs={"exception": Exception("Bad Request!")},
+            kwargs={"exception": Exception("Bad Request")},
         ),
         path(
             "403/",

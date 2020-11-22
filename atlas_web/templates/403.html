@@ -1,9 +1,15 @@
 {% extends "base.html" %}
+{% load static i18n %}
 
-{% block title %}Forbidden (403){% endblock %}
+{% block title %}{{ block.super }} | {% trans "Forbidden (403) " %}{% endblock %}
 
 {% block content %}
-<h1>Forbidden (403)</h1>
-
-<p>CSRF verification failed. Request aborted.</p>
+<div class="container">
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "Permission denied!" %}</div>
+        <div class="card-body">
+            {% trans "You do not have access to view this page." %}
+        </div>
+    </div>
+</div>
 {% endblock content %}
