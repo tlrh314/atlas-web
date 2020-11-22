@@ -19,6 +19,8 @@ class TestUserCreationForm:
                 "email": proto_user.email,
                 "password1": proto_user._password,
                 "password2": proto_user._password,
+                "captcha_0": "dontcare",
+                "captcha_1": "PASSED",  # CAPTCHA_TEST_MODE = True
             }
         )
 
@@ -37,6 +39,8 @@ class TestUserCreationForm:
                 "email": proto_user.email,
                 "password1": proto_user._password,
                 "password2": proto_user._password,
+                "captcha_0": "dontcare",
+                "captcha_1": "PASSED",  # CAPTCHA_TEST_MODE = True
             }
         )
 

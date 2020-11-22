@@ -54,5 +54,13 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 # done after the SECRET_KEY is already set (above)
 from .filebrowser import *  # noqa isort:skip
 
+
+# django-simple-captcha
+# -------------------------------------------------------------------------------
+# django-simple-captcha - https://django-simple-captcha.readthedocs.io/
+
+# https://django-simple-captcha.readthedocs.io/en/latest/advanced.html#captcha-test-mode
+CAPTCHA_TEST_MODE = True
+
 # atlas-web specific settings
 # ------------------------------------------------------------------------------

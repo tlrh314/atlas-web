@@ -50,6 +50,8 @@ class TestUserRegisterView:
             "email": email,
             "password1": "secretPass123",
             "password2": "secretPass123",
+            "captcha_0": "dontcare",
+            "captcha_1": "PASSED",  # CAPTCHA_TEST_MODE = True
         }
 
         response = client.post(reverse("users:register"), data=data)

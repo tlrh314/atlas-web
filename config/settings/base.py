@@ -287,5 +287,19 @@ REST_FRAMEWORK = {
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
 
+
+# django-simple-captcha
+# -------------------------------------------------------------------------------
+# django-simple-captcha - https://django-simple-captcha.readthedocs.io/
+
+# https://django-simple-captcha.readthedocs.io/en/latest/advanced.html#generators-and-modifiers
+CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"
+# https://django-simple-captcha.readthedocs.io/en/latest/advanced.html#captcha-letter-rotation
+CAPTCHA_LETTER_ROTATION = (-1, 1)
+# https://django-simple-captcha.readthedocs.io/en/latest/advanced.html#captcha-filter-functions
+CAPTCHA_FILTER_FUNCTIONS = ()
+# https://django-simple-captcha.readthedocs.io/en/latest/advanced.html#captcha-noise-functions
+CAPTCHA_NOISE_FUNCTIONS = ("captcha.helpers.noise_null",)
+
 # atlas-web specific settings
 # ------------------------------------------------------------------------------

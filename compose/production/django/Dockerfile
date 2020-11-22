@@ -19,7 +19,11 @@ RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0
   # dependencies for building Python packages
   && apt-get install --no-install-recommends -y build-essential \
   # psycopg2 dependencies
-  libpq-dev \
+    libpq-dev \
+  # Translations dependencies
+    gettext \
+  # Pillow dependencies
+    libz-dev libjpeg-dev libfreetype6-dev python-dev \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/* \

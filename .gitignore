@@ -284,6 +284,7 @@ atlas_web/static/vendor
 .bash_functions
 .bashrc
 .coveragerc
+.ipynb_checkpoints/
 .jupyter
 .vimrc
 .config

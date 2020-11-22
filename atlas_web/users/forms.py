@@ -1,4 +1,4 @@
-# from captcha.fields import CaptchaField
+from captcha.fields import CaptchaField
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm as DefaultAuthenticationForm
@@ -14,11 +14,11 @@ User = get_user_model()
 class UserCreationForm(DefaultUserCreationForm):
     """ This form is used in the frontend, for public signup at the website """
 
-    # captcha = CaptchaField()
+    captcha = CaptchaField()
 
     class Meta:
         model = User
-        fields = ("email", "password1", "password2")
+        fields = ("email", "password1", "password2", "captcha")
 
     def clean_email(self):
         super().clean()
