@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
@@ -6,9 +7,9 @@ from atlas_web.simulation.utils import create_atlas_input_file_from_valid_form
 
 
 def simulation_input_view(request):
-    atlas_input_file_content = None
-    atlas_input_file_contentt = None
-    atlas_input_file_contenttt = None
+    atlas9_punched_input = None
+    atlas9_in_odf = None
+    atlas9_control = None
 
     if request.method == "POST":
         form = SimulationForm(data=request.POST)
@@ -17,11 +18,17 @@ def simulation_input_view(request):
                 form.cleaned_data
             )
             with open(atlas_input_file_name[0], "r") as f:
-                atlas_input_file_content = f.read()
+                atlas9_punched_input = f.read()
             with open(atlas_input_file_name[1], "r") as f:
-                atlas_input_file_contentt = f.read()
+                atlas9_in_odf = f.read()
             with open(atlas_input_file_name[2], "r") as f:
-                atlas_input_file_contenttt = f.read()
+                atlas9_control = f.read()
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                _("Your input is valid! The atlas code files are listed below"),
+            )
 
     else:
         form = SimulationForm()
@@ -34,8 +41,8 @@ def simulation_input_view(request):
         "simulation/input.html",
         {
             "form": form,
-            "atlas_input_file_content": atlas_input_file_content,
-            "atlas_input_file_contentt": atlas_input_file_contentt,
-            "atlas_input_file_contenttt": atlas_input_file_contenttt,
+            "atlas9_punched_input": atlas9_punched_input,
+            "atlas9_in_odf": atlas9_in_odf,
+            "atlas9_control": atlas9_control,
         },
     )

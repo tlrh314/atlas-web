@@ -5,40 +5,54 @@
 
 {% block content %}
 
-    <div class="mt-5">
-      <h1>Veronika's Simulation Input Form</h1>
+<div class="container">
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "Simulation Input Form" %}</div>
+        <div class="card-body">
+
+            <div class="mt-5">
+              <form method="post" novalidate>{% csrf_token %}
+                {% comment %}
+                TODO @Miha, use your Browser's developer tools / inspect source code to see
+                the magic that Django does under the hood to transform this {{ form }}
+                to the DOM elements input, label, select, button, etc in the html!
+                    See e.g. https://docs.djangoproject.com/en/3.1/topics/forms/#working-with-form-templates
+                {% endcomment %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">{% trans "Submit" %}</button>
+              </form>
+            </div>
+        </div>
     </div>
 
-    <div class="mt-5">
-      <form method="post" novalidate>{% csrf_token %}
-        {% comment %}
-        TODO @Miha, use your Browser's developer tools / inspect source code to see
-        the magic that Django does under the hood to transform this {{ form }}
-        to the DOM elements input, label, select, button, etc in the html!
-            See e.g. https://docs.djangoproject.com/en/3.1/topics/forms/#working-with-form-templates
-        {% endcomment %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-
-    {% if atlas_input_file_content %}
-    <div class="mt-5">
-      Your input is valid. Below sits the Atlas input file, please verify that this is correct.
-      <br>atlas9.punched.input
-      <p>
-        {{ atlas_input_file_content|linebreaks }}
-      </p>
-	    atlas9.inODF
-      <p>
-        {{ atlas_input_file_contentt|linebreaks }}
-      </p>
-	    atlas9.control
-      <p>
-        {{ atlas_input_file_contenttt|linebreaks }}
-      </p>
+    {% if atlas9_punched_input %}
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "atlas9.punched.input" %}</div>
+        <div class="card-body">
+            {{ atlas9_punched_input|linebreaks }}
+        </div>
     </div>
     {% endif %}
+
+    {% if atlas9_in_odf %}
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "atlas9.inODF" %}</div>
+        <div class="card-body">
+            {{ atlas9_in_odf|linebreaks }}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if atlas9_control %}
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "atlas9.control" %}</div>
+        <div class="card-body">
+            {{ atlas9_control|linebreaks }}
+        </div>
+    </div>
+    {% endif %}
+
+</div> {# container #}
 
 
 {% endblock content %}

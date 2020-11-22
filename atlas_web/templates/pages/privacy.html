@@ -1,31 +1,36 @@
 {% extends "base.html" %}
+{% load static i18n %}
 
-      {% block content %}
+{% block content %}
+<div class="container">
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "Privacy" %}</div>
+        <div class="card-body">
 
-      <div class="mt-5">
+            <h5>Data Collection and Processing</h5>
 
-      <h2>Data Collection and Processing</h2>
+            <p>
+            We wish to make our websites as appealing and comfortable for you as possible.
+            To this end, analysis of statistical information relating to your utilisation of
+            our websites and the collection of technical details on the web browsers and
+            computers of our online visitors is very helpful for us.
+            </p>
 
-        <p>
-        We wish to make our websites as appealing and comfortable for you as possible.
-        To this end, analysis of statistical information relating to your utilisation of
-        our websites and the collection of technical details on the web browsers and
-        computers of our online visitors is very helpful for us.
-        </p>
+            <p>
+            Further information on which data is collected and on your options to object
+            is available in <a href="http://www.mpg.de/privacy-policy/data-collection"
+                               target="_blank" class="external">our&nbsp;Data Collection Declaration</a>.
+            </p>
 
-        <p>
-        Further information on which data is collected and on your options to object
-        is available in <a href="http://www.mpg.de/privacy-policy/data-collection"
-        target="_blank" class="external">our&nbsp;Data Collection Declaration</a>.
-        </p>
+            <p>
+            The data protection officer of the Max Planck Society is available for questions
+            concerning the topic of data protection at&nbsp;<a href="mailto:dsb@gv.mpg.de">dsb@gv.mpg.de</a>&nbsp;or at
+            <a href="tel:+49 89 2108-1554">+49 89 2108-1554</a>.</p>
 
-        <p>
-        The data protection officer of the Max Planck Society is available for questions
-        concerning the topic of data protection at&nbsp;<a href="mailto:dsb@gv.mpg.de">dsb@gv.mpg.de</a>&nbsp;or at
-        <a href="tel:+49 89 2108-1554">+49 89 2108-1554</a>.</p>
-
-        <h2>Data Transmission</h2>
-        <p>Your personal data will only be transmitted to government organizations and authorities in legally required cases and/or for prosecution in the event of attacks on our network infrastructure. Your personal data are not provided to third parties for any other purpose.</p>
-        <p></p>
-      </div>
-      {% endblock content %}
+            <h5>Data Transmission</h5>
+            <p>Your personal data will only be transmitted to government organizations and authorities in legally required cases and/or for prosecution in the event of attacks on our network infrastructure. Your personal data are not provided to third parties for any other purpose.</p>
+            <p></p>
+        </div>
+    </div>
+</div> {# container #}
+{% endblock content %}

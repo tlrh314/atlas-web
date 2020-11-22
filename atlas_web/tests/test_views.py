@@ -66,12 +66,12 @@ class BaseViewTestCase(TestCase):
         self.assertTemplateUsed(response, "pages/privacy.html")
         self.assertContains(
             response,
-            "<h2>Data Collection and Processing</h2>",
+            "<h5>Data Collection and Processing</h5>",
             status_code=200,
         )
         self.assertContains(
             response,
-            "<h2>Data Transmission</h2>",
+            "<h5>Data Transmission</h5>",
             status_code=200,
         )
 
