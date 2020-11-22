@@ -37,8 +37,8 @@ django-restart:  ## Restart Django+Celery
 	@make django-stop
 	@make django-start
 
-notebook-start:  ## Start a Jupyter Notebook /w access to our Django app and postgres database
-	@docker-compose -f local.yml up -d notebook
+notebook:  ## Start a Jupyter Notebook /w access to our Django app and postgres database
+	@docker-compose -f local.yml up notebook
 
 notebook-stop:  ## Stop the Jupyter Notebook
 	@docker-compose -f local.yml stop notebook
@@ -47,7 +47,7 @@ notebook-stop:  ## Stop the Jupyter Notebook
 notebook-restart:  ## Restart the Jupyter Notebook
 	@make django
 	@make notebook-stop
-	@make notebook-start
+	@make notebook
 
 bash:  ## Open an interactive bash shell in the django container
 	@docker exec -it django bash
