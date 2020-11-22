@@ -84,20 +84,32 @@ class UserAdmin(auth_admin.UserAdmin):
         obj.last_updated_by = request.user
         obj.save()
 
-    def validate_user(modeladmin, request, queryset):
+    def validate_user(self, request, queryset):
+        already_validated = 0
+        newly_validated = 0
         subject = _("Your account at atlas-web has been approved")
         for user in queryset.iterator():
             if user.is_validated:
+                already_validated += 1
                 continue  # don't want to send email twice
 
             context = {"user": str(user)}
             text_content = render_to_string("users/account_approved.txt", context)
             html_content = render_to_string("users/account_approved.html", context)
             user.send_email(subject, text_content, html_content)
+            newly_validated += 1
 
         # After sending the mail we proceed to send the account approval mail
         queryset.update(is_active=True)
         queryset.update(is_validated=True)
+        self.message_user(
+            request,
+            _(
+                "Succesfully validated {} users, and skipped {} b/c already validated.".format(
+                    newly_validated, already_validated
+                )
+            ),
+        )
 
     validate_user.short_description = _(
         "Mark users as validated and send an automated welcome email to inform them."

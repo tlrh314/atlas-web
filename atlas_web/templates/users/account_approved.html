@@ -1,14 +1,10 @@
-{% load i18n %}{% autoescape off %}{% trans 'Dear' %} {{ user }},
-
-{% blocktrans %}
+{% load i18n %}{% autoescape off %}{% blocktrans %}Dear {{ user }},<br>
+<br>
 We have approved your user account at the atlas-web interface. You are now able
 to start simulations on the Atlas dedicated HPC node and monitor the progress
-and results through our web interface.
-
-If you have any questions about usage of atlas-web, please see the Read the Docs
-or send us an email.
-
-Kind regards,
-The atlas-web team
-{% endblocktrans %}
-{% endautoescape %}
+and results through our web interface.<br>
+<br>
+If you have any questions about usage of atlas-web, please contact us via email.<br>
+<br>
+Kind regards,<br>
+The atlas-web team{% endblocktrans %}{% endautoescape %}

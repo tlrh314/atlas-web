@@ -37,7 +37,9 @@ class UserCreationForm(DefaultUserCreationForm):
         user.is_validated = False
         user.save()
 
-        subject = _("Please verify email address for your atlas-web account")
+        subject = _(
+            "Welcome to atlas-web. Your account is pending approval by our team."
+        )
         context = {"user": str(user)}
         text_content = render_to_string("users/account_created.txt", context)
         html_content = render_to_string("users/account_created.html", context)

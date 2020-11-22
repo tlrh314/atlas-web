@@ -1,9 +1,6 @@
-{% load i18n %}{% autoescape off %}{% trans 'Dear' %} {{ user }},
+{% load i18n %}{% autoescape off %}{% blocktrans %}Dear {{ user }},
 
-{% blocktrans %}
-Welcome to the atlas-web interface.
+Welcome to the atlas-web interface. We have notified the atlas-web admins to kindly approve your acccount. You will receive an automatic email notification once your account has been approved.
 
 Kind regards,
-The atlas-web team
-{% endblocktrans %}
-{% endautoescape %}
+The atlas-web team{% endblocktrans %}{% endautoescape %}
