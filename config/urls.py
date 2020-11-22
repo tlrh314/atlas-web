@@ -34,6 +34,7 @@ urlpatterns = [
     path("admin/", include("django.contrib.auth.urls")),
     # User management
     path("users/", include("atlas_web.users.urls", namespace="users")),
+    path("captcha/", include("captcha.urls")),
     # Futher atlas-web specific urls
     path("simulation/", include("atlas_web.simulation.urls", namespace="simulation")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
