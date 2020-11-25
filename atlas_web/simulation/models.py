@@ -41,22 +41,23 @@ class AtlasSimulation(models.Model):
     date_updated = models.DateTimeField(_("Date Last Changed"), auto_now=True)
 
     def save(self, *args, **kwargs):
-        self.name = "{:.0f}".format(timezone.now().timestamp())
-        input = AtlasSimulationInput(
-            simulation=self, folder="/path/to/nfs/queue/{}/".format(self.name)
-        )
-        slurmjob = AtlasSimulationSlurmJob(
-            simulation=self,
-            jobscript="/path/to/nfs/queue/{}/jobscript.sh".format(self.name),
-        )
-        output = AtlasSimulationOutput(
-            simulation=self, folder="/path/to/nfs/processed/{}/".format(self.name)
-        )
+        if not hasattr(self, "name"):
+            self.name = "{:.0f}".format(timezone.now().timestamp())
+            input = AtlasSimulationInput(
+                simulation=self, folder="/path/to/nfs/queue/{}/".format(self.name)
+            )
+            slurmjob = AtlasSimulationSlurmJob(
+                simulation=self,
+                jobscript="/path/to/nfs/queue/{}/jobscript.sh".format(self.name),
+            )
+            output = AtlasSimulationOutput(
+                simulation=self, folder="/path/to/nfs/processed/{}/".format(self.name)
+            )
 
-        super().save()
-        input.save()
-        slurmjob.save()
-        output.save()
+            super().save()
+            input.save()
+            slurmjob.save()
+            output.save()
 
     def __str__(self):
         return "AtlasSimulation {}".format(self.name)
