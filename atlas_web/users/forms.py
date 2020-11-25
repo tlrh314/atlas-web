@@ -75,7 +75,7 @@ class UserAdminCreationForm(admin_forms.UserCreationForm):
 
     class Meta(admin_forms.UserCreationForm.Meta):
         model = User
-        exclude = ("username",)
+        exclude = ("username",)  # inherited from the default form
 
     def clean_email(self):
         email = self.cleaned_data["email"]

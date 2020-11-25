@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django_celery_beat.models import ClockedSchedule, IntervalSchedule, SolarSchedule
 
+from atlas_web.simulation.models import AtlasSimulation
 from atlas_web.users.forms import (
     UserAdminChangeForm,
     UserAdminCreationForm,
@@ -16,6 +17,65 @@ from atlas_web.users.forms import (
 )
 
 User = get_user_model()
+
+
+class AtlasSimulationsStartedInline(admin.StackedInline):
+    model = AtlasSimulation
+    fields = (
+        "name",
+        "get_simulation_input_folder",
+        "get_simulation_slurmjob_jobscript",
+        "get_simulation_slurmjob_status",
+        "get_simulation_output_folder",
+    )
+    readonly_fields = (
+        "name",
+        "get_simulation_input_folder",
+        "get_simulation_slurmjob_jobscript",
+        "get_simulation_slurmjob_status",
+        "get_simulation_output_folder",
+    )
+    fk_name = "requested_by"
+    extra = 0
+    verbose_name = _("Atlas Simulation Started")
+    verbose_name_plural = _("Atlas Simulations Started")
+    can_delete = False
+
+    def get_simulation_input_folder(self, obj):
+        return obj.input.folder
+
+    get_simulation_input_folder.short_description = _("Input Folder")
+
+    def get_simulation_slurmjob_jobscript(self, obj):
+        return obj.slurmjob.jobscript
+
+    get_simulation_slurmjob_jobscript.short_description = _("Slurm Jobscript")
+
+    def get_simulation_slurmjob_status(self, obj):
+        return obj.slurmjob.get_status_display()
+
+    get_simulation_slurmjob_status.short_description = _("Slurm Status")
+
+    def get_simulation_output_folder(self, obj):
+        return obj.output.folder
+
+    get_simulation_output_folder.short_description = _("Output Folder")
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+class AtlasSimulationsAlsoVisibleToUserInline(admin.TabularInline):
+    model = AtlasSimulation
+    fields = ("name",)
+    readonly_fields = ("name",)
+    fk_name = "access_list"
+    extra = 0
+    verbose_name = _("Atlas Simulation Started")
+    verbose_name_plural = _("Atlas Simulations Started")
 
 
 @admin.register(User)
@@ -30,9 +90,16 @@ class UserAdmin(auth_admin.UserAdmin):
         "is_validated",
         "is_staff",
         "is_superuser",
+        "get_simulations_started_count",
+    ]
+    readonly_fields = [
+        "get_simulations_started_count",
     ]
     list_filter = ["is_active", "is_validated", "is_staff", "is_superuser"]
     search_fields = ["email", "first_name", "last_name"]
+    inlines = [
+        AtlasSimulationsStartedInline,
+    ]
     actions = ["validate_user", "send_password_reset"]
 
     form = UserAdminChangeForm
@@ -83,6 +150,12 @@ class UserAdmin(auth_admin.UserAdmin):
     def save_model(self, request, obj, form, change):
         obj.last_updated_by = request.user
         obj.save()
+
+    def get_simulations_started_count(self, obj):
+        return obj.simulations_started.count()
+
+    get_simulations_started_count.short_description = _("Simulations Started")
+    get_simulations_started_count.admin_order_field = "simulations_started__name"
 
     def validate_user(self, request, queryset):
         already_validated = 0
