@@ -57,11 +57,12 @@ class SimulationForm(forms.Form):
     )
 
     convection = forms.BooleanField(label=_("Enable Convection?"), initial=True)
+
     mixing_length = forms.FloatField(
         required=False,
         min_value=0,
         max_value=5,
-        initial=2,
+        # initial=None,
         widget=forms.NumberInput(attrs={"id": "form_mixing_length", "step": "1"}),
         label=_("Mixing length in km, only used when convection is enabled."),
     )
