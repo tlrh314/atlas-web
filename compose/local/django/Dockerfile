@@ -19,7 +19,8 @@ RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0
 COPY ./requirements /requirements
 RUN --mount=type=cache,mode=0755,target=/root/.cache/pip set -ex \
   && pip wheel --no-deps --use-feature=2020-resolver --wheel-dir /usr/src/app/wheels \
-       -r /requirements/local.txt
+       -r /requirements/local.txt \
+  && pip wheel --no-deps --use-feature=2020-resolver --wheel-dir /usr/src/app/wheels pygraphviz
 
 FROM python:3.8-slim-buster as local-run-stage
 ENV PYTHONUNBUFFERED 1

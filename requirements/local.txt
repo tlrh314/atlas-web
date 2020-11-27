@@ -39,4 +39,3 @@ django-coverage-plugin==1.8.0  # https://github.com/nedbat/django_coverage_plugi
 pytest-django==4.1.0  # https://github.com/pytest-dev/pytest-django
 
 notebook  # https://github.com/jupyter/notebook
-pygraphviz
