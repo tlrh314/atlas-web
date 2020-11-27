@@ -24,19 +24,17 @@ class TestAtlasSimulation:
         name = simulation.name.replace("Test: ", "")
 
         assert isinstance(simulation.input, AtlasSimulationInput)
-        assert simulation.input.folder == "{}/nfs/queue/{}/".format(
-            settings.NFS_DIR, name
-        )
+        assert simulation.input.folder == "{}/queue/{}/".format(settings.NFS_DIR, name)
         assert os.path.exists(simulation.input.folder)
         assert os.path.isdir(simulation.input.folder)
 
         assert isinstance(simulation.slurmjob, AtlasSimulationSlurmJob)
-        assert simulation.slurmjob.jobscript == "{}/nfs/queue/{}/jobscript.sh".format(
+        assert simulation.slurmjob.jobscript == "{}/queue/{}/jobscript.sh".format(
             settings.NFS_DIR, name
         )
 
         assert isinstance(simulation.output, AtlasSimulationOutput)
-        assert simulation.output.folder == "{}/nfs/processed/{}/".format(
+        assert simulation.output.folder == "{}/processed/{}/".format(
             settings.NFS_DIR, name
         )
 

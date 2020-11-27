@@ -48,17 +48,17 @@ class AtlasSimulation(models.Model):
 
             input = AtlasSimulationInput(
                 simulation=self,
-                folder="{}/nfs/queue/{}/".format(settings.NFS_DIR, self.name),
+                folder="{}/queue/{}/".format(settings.NFS_DIR, self.name),
             )
             slurmjob = AtlasSimulationSlurmJob(
                 simulation=self,
-                jobscript="{}/nfs/queue/{}/jobscript.sh".format(
+                jobscript="{}/queue/{}/jobscript.sh".format(
                     settings.NFS_DIR, self.name
                 ),
             )
             output = AtlasSimulationOutput(
                 simulation=self,
-                folder="{}/nfs/processed/{}/".format(settings.NFS_DIR, self.name),
+                folder="{}/processed/{}/".format(settings.NFS_DIR, self.name),
             )
 
             # First save the AtlasSimulation instance such that it now has pk,
