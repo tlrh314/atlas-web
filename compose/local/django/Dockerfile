@@ -9,7 +9,9 @@ RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0
   # dependencies for building Python packages
   && apt-get install --no-install-recommends -y build-essential \
   # psycopg2 dependencies
-    libpq-dev \
+       libpq-dev \
+  # django-extensions / graph_models to visualize database schema
+       graphviz-dev \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
@@ -17,7 +19,7 @@ RUN --mount=type=cache,mode=0755,target=/var/cache/apt --mount=type=cache,mode=0
 COPY ./requirements /requirements
 RUN --mount=type=cache,mode=0755,target=/root/.cache/pip set -ex \
   && pip wheel --no-deps --use-feature=2020-resolver --wheel-dir /usr/src/app/wheels \
-    -r /requirements/local.txt
+       -r /requirements/local.txt
 
 FROM python:3.8-slim-buster as local-run-stage
 ENV PYTHONUNBUFFERED 1
@@ -32,13 +34,13 @@ RUN set -ex \
   # tlrh314 dependencies
   && apt install --no-install-recommends -y vim curl \
   # psycopg2 dependencies
-    libpq-dev \
+       libpq-dev \
   # Translations dependencies
-    gettext \
+       gettext \
   # Pillow dependencies
-    libz-dev libjpeg-dev libfreetype6-dev python-dev \
+       libz-dev libjpeg-dev libfreetype6-dev python-dev \
   # django-extensions / graph_models to visualize database schema
-     graphviz graphviz-dev \
+       graphviz \
   # cleaning up unused files
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/* \
