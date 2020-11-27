@@ -282,6 +282,7 @@ atlas_web/static/vendor
 # Ignore $HOME files
 .bash_aliases
 .bash_functions
+.bash_history
 .bashrc
 .coveragerc
 .ipynb_checkpoints/
@@ -292,6 +293,13 @@ atlas_web/static/vendor
 .local
 .pki
 .python_history
+
+# Database schema
+dbschema.dot
+dbschema_dot.pdf
+dbschema_fdp.pdf
+dbschema_osage.pdf
+dbschema_sfdp.pdf
 
 wiki
 

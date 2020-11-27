@@ -37,6 +37,8 @@ RUN set -ex \
     gettext \
   # Pillow dependencies
     libz-dev libjpeg-dev libfreetype6-dev python-dev \
+  # django-extensions / graph_models to visualize database schema
+     graphviz graphviz-dev \
   # cleaning up unused files
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/* \
