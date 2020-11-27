@@ -1,22 +1,28 @@
 import math
 
+from django.conf import settings
+
 from atlas_web.simulation.abundances import ANDERS, ASPLUND, GREVESS
 from atlas_web.simulation.grids import P_GRID, T_GRID, WAVELENGTH_GRID
 
 
-def create_atlas_input_file_from_valid_form(cleaned_data):
-    print("\n\nThe cleaned (=valid) form data are as follows\n")
-    print(cleaned_data)
-    print("End of form data\n\n")
+def create_atlas_input_files_from_valid_form(cleaned_data, simulation_input_folder):
+    if settings.DEBUG:
+        print("\n\nThe cleaned (=valid) form data are as follows\n")
+        print(cleaned_data)
+        print("End of form data\n\n")
 
     if cleaned_data["abundances"] == "anders":
-        print("We will use anders abunances")
+        if settings.DEBUG:
+            print("We will use anders abunances")
         abundances_to_use = ANDERS
     elif cleaned_data["abundances"] == "asplund":
-        print("We will use asplund abunances")
+        if settings.DEBUG:
+            print("We will use asplund abunances")
         abundances_to_use = ASPLUND
     elif cleaned_data["abundances"] == "grevess":
-        print("We will use grevess abunances")
+        if settings.DEBUG:
+            print("We will use grevess abunances")
         abundances_to_use = GREVESS
     else:
         raise
@@ -26,7 +32,8 @@ def create_atlas_input_file_from_valid_form(cleaned_data):
     def writefile(filename, var1, var2):
         with open(filename, "w") as fo:
             fo.write("Test text" + var1 + var2)
-        print(var1)
+        if settings.DEBUG:
+            print(var1)
 
     NAMETYPE = {1: "ODF", 2: "Model", 3: "Flux"}
 
@@ -352,7 +359,11 @@ def create_atlas_input_file_from_valid_form(cleaned_data):
         fo.close()
         return
 
-    fnames = ["atlas9.punched.input", "atlas9.inODF", "atlas9.control"]
+    fnames = [
+        "{}atlas9.punched.input".format(simulation_input_folder),
+        "{}atlas9.inODF".format(simulation_input_folder),
+        "{}atlas9.control".format(simulation_input_folder),
+    ]
     gen_pun_inp(
         fnames[0],
         abundances_to_use,
@@ -366,14 +377,3 @@ def create_atlas_input_file_from_valid_form(cleaned_data):
     # last argument True if we are on a custom wav grid
     # if we are on a custom T grid it is False
     gen_control_inp(fnames[2], 1, True)
-
-    # with open(fname, "w") as f:
-    #     f.write("We use the following abunances\n")
-    #     f.write("\n".join(str(value) for value in abundances_to_use))
-    #     f.write("We use the following wavelength grid\n")
-    #     f.write("\n".join(str(value) for value in wavelength_grid_to_use))
-    #     f.write("We use the following T grid\n")
-    #     f.write("\n".join(str(value) for value in T_grid_to_use))
-    #     f.write("We use the following p grid\n")
-    #     f.write("\n".join(str(value) for value in P_grid_to_use))
-    return fnames

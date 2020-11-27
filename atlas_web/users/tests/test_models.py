@@ -5,6 +5,10 @@ from atlas_web.users.models import User
 pytestmark = pytest.mark.django_db
 
 
+def test_factory(user: User):
+    assert user.first_name[0:6] == "Test: "
+
+
 def test_manager_create_superuser_creates_an_active_validated_staff_superuser():
     """  Sanity check for managers.py """
     superuser = User.objects.create_superuser(

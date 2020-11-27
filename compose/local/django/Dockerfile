@@ -42,7 +42,7 @@ RUN set -ex \
   && rm -rf /var/lib/apt/lists/* \
   # non-privileged user
   && groupadd -g 1000 atlas \
-  && useradd -r -u 1000 -g atlas atlas -s /bin/bash -d /atlas
+  && useradd -r -u 1000 -g atlas atlas -s /bin/bash -d /app
 
 # Pip layer
 COPY --from=local-build-stage --chown=atlas:atlas /usr/src/app/wheels  /wheels

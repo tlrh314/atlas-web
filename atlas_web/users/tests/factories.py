@@ -27,6 +27,10 @@ class UserFactory(DjangoModelFactory):
         )
         self.set_password(password)
 
+    @post_generation
+    def first_name(self, create: bool, extracted: Sequence[Any], **kwargs):
+        self.first_name = "Test: {}".format(self.first_name)
+
     class Meta:
         model = get_user_model()
         django_get_or_create = ("email",)

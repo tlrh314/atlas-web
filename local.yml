@@ -11,7 +11,7 @@ x-django: &django
     - mailhog
   volumes:
     - .:/app:z
-    - ./nfs:/nfs
+    - ./nfs:/app/nfs
   env_file:
     - ./.envs/.local/.django
     - ./.envs/.local/.postgres

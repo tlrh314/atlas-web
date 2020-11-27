@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -41,23 +43,31 @@ class AtlasSimulation(models.Model):
     date_updated = models.DateTimeField(_("Date Last Changed"), auto_now=True)
 
     def save(self, *args, **kwargs):
-        if not hasattr(self, "name"):
+        if self.pk is None:  # this is only true when first created
             self.name = "{:.0f}".format(timezone.now().timestamp())
             input = AtlasSimulationInput(
-                simulation=self, folder="/path/to/nfs/queue/{}/".format(self.name)
+                simulation=self, folder="/app/nfs/queue/{}/".format(self.name)
             )
             slurmjob = AtlasSimulationSlurmJob(
                 simulation=self,
-                jobscript="/path/to/nfs/queue/{}/jobscript.sh".format(self.name),
+                jobscript="/app/nfs/queue/{}/jobscript.sh".format(self.name),
             )
             output = AtlasSimulationOutput(
-                simulation=self, folder="/path/to/nfs/processed/{}/".format(self.name)
+                simulation=self, folder="/app/nfs/processed/{}/".format(self.name)
             )
 
+            # First save the AtlasSimulation instance such that it now has pk,
+            # which is a prereq to then save the related instancesd (which require pk)
             super().save()
             input.save()
             slurmjob.save()
             output.save()
+
+            # Then create the simulation input folder
+            if not os.path.exists(input.folder) or not os.path.isdir(input.folder):
+                os.mkdir(input.folder)
+        else:
+            super().save()
 
     def __str__(self):
         return "AtlasSimulation {}".format(self.name)

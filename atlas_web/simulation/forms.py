@@ -56,7 +56,7 @@ class SimulationForm(forms.Form):
         label=_("Turbulent Velocity in km/s"),
     )
 
-    convection = forms.BooleanField(label=_("Enable Convection?"), initial=True)
+    convection = forms.BooleanField(label=_("Enable Convection?"), required=False)
 
     mixing_length = forms.FloatField(
         required=False,

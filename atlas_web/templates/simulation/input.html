@@ -43,6 +43,24 @@
     </div>
     {% endif %}
 
+    {% if atlas9_in_model %}
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "atlas9.inMODEL" %}</div>
+        <div class="card-body">
+            {{ atlas9_in_model|linebreaks }}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if atlas9_in_flux %}
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "atlas9.inFLUX" %}</div>
+        <div class="card-body">
+            {{ atlas9_in_flux|linebreaks }}
+        </div>
+    </div>
+    {% endif %}
+
     {% if atlas9_control %}
     <div class="card card-login mx-auto mt-5 mb-3">
         <div class="card-header">{% trans "atlas9.control" %}</div>
