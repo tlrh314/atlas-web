@@ -1,1 +1,4 @@
-Miha Cernetic and Timo Halbesma
+The maintainers and developers of atlas-web are:
+ - Miha Cernetic <cernetic@mpa-garching.mpg.de>
+ - Timo Halbesma <timo@halbesma.com>
+ - Veronika Witzke <witzke@mps.mpg.de>
