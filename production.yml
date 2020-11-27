@@ -11,6 +11,8 @@ x-django: &django
   depends_on:
     - postgres
     - redis
+  volumes:
+    - ./nfs:/nfs
   env_file:
     - ./.envs/.production/.django
     - ./.envs/.production/.postgres

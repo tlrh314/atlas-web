@@ -296,6 +296,4 @@ atlas_web/static/vendor
 wiki
 
 # Atlas Code input files
-atlas9.control
-atlas9.inODF
-atlas9.punched.input
+nfs
