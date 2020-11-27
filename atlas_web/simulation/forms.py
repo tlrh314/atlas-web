@@ -99,7 +99,7 @@ class SimulationForm(forms.Form):
         min_value=1500,
         max_value=12000,
         initial=1500,
-        widget=forms.NumberInput(attrs={"id": "wavelength_start", "step": "1"}),
+        widget=forms.NumberInput(attrs={"id": "T_start", "step": "1"}),
         label=_("Starting Temperature K"),
     )
 
@@ -108,7 +108,7 @@ class SimulationForm(forms.Form):
         min_value=1500,
         max_value=12000,
         initial=1500,
-        widget=forms.NumberInput(attrs={"id": "wavelength_end", "step": "1"}),
+        widget=forms.NumberInput(attrs={"id": "T_end", "step": "1"}),
         label=_("End Temperature in K"),
     )
     T_n = forms.FloatField(
@@ -116,7 +116,7 @@ class SimulationForm(forms.Form):
         min_value=3,
         max_value=100,
         initial=25,
-        widget=forms.NumberInput(attrs={"id": "wavelength_step", "step": "1"}),
+        widget=forms.NumberInput(attrs={"id": "T_step", "step": "1"}),
         label=_("Number of T bins"),
     )
 
