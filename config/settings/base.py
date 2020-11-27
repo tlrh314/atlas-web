@@ -303,3 +303,4 @@ CAPTCHA_NOISE_FUNCTIONS = ("captcha.helpers.noise_null",)
 
 # atlas-web specific settings
 # ------------------------------------------------------------------------------
+NFS_DIR = str(ROOT_DIR / "nfs")

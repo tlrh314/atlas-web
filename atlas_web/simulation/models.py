@@ -45,15 +45,20 @@ class AtlasSimulation(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is None:  # this is only true when first created
             self.name = "{:.0f}".format(timezone.now().timestamp())
+
             input = AtlasSimulationInput(
-                simulation=self, folder="/app/nfs/queue/{}/".format(self.name)
+                simulation=self,
+                folder="{}/nfs/queue/{}/".format(settings.NFS_DIR, self.name),
             )
             slurmjob = AtlasSimulationSlurmJob(
                 simulation=self,
-                jobscript="/app/nfs/queue/{}/jobscript.sh".format(self.name),
+                jobscript="{}/nfs/queue/{}/jobscript.sh".format(
+                    settings.NFS_DIR, self.name
+                ),
             )
             output = AtlasSimulationOutput(
-                simulation=self, folder="/app/nfs/processed/{}/".format(self.name)
+                simulation=self,
+                folder="{}/nfs/processed/{}/".format(settings.NFS_DIR, self.name),
             )
 
             # First save the AtlasSimulation instance such that it now has pk,

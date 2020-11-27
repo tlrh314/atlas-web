@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from django.conf import settings
 
 from atlas_web.simulation.models import (
     AtlasSimulation,
@@ -23,17 +24,21 @@ class TestAtlasSimulation:
         name = simulation.name.replace("Test: ", "")
 
         assert isinstance(simulation.input, AtlasSimulationInput)
-        assert simulation.input.folder == "/app/nfs/queue/{}/".format(name)
+        assert simulation.input.folder == "{}/nfs/queue/{}/".format(
+            settings.NFS_DIR, name
+        )
         assert os.path.exists(simulation.input.folder)
         assert os.path.isdir(simulation.input.folder)
 
         assert isinstance(simulation.slurmjob, AtlasSimulationSlurmJob)
-        assert simulation.slurmjob.jobscript == "/app/nfs/queue/{}/jobscript.sh".format(
-            name
+        assert simulation.slurmjob.jobscript == "{}/nfs/queue/{}/jobscript.sh".format(
+            settings.NFS_DIR, name
         )
 
         assert isinstance(simulation.output, AtlasSimulationOutput)
-        assert simulation.output.folder == "/app/nfs/processed/{}/".format(name)
+        assert simulation.output.folder == "{}/nfs/processed/{}/".format(
+            settings.NFS_DIR, name
+        )
 
         # Clean up the folder created by the test intance
         # TODO: this does not cleanup folders when the test fails, so an approach
