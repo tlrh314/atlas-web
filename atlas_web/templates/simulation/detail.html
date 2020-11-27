@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{{ block.super }} | {% trans "Simulation" %} {{ simulation.name }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "Simulation" %} {{ simulation.name }}</div>
+        <div class="card-body">
+            <div class="mt-5">
+              <table class="table">
+                <tbody>
+                  <tr><th>{{ simulation.name }}</th></tr>
+                </tbody>
+              </table>
+            </div>
+        </div>
+    </div>
+
+</div> {# container #}
+
+{% endblock content %}
+
+{% block javascript %} {{ block.super }}
+<script type="text/javascript" src="{% static 'js/simulation_detail.js' %}"></script>
+{% endblock javascript %}

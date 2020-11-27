@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{{ block.super }} | {% trans "My simulations" %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "Simulation started by me" %}</div>
+        <div class="card-body">
+            <div class="mt-5">
+              {% if simulations_requested_by_user %}
+              <table class="table">
+                <tbody>
+                  {% for simulation in simulations_requested_by_user %}
+                  <tr><th><a href="{% url 'simulation:detail' simulation.pk %}">{{ simulation.name }}</a></th></tr>
+                 {% endfor %}
+                </tbody>
+              </table>
+              {% else %}
+              <p>
+                {% trans "You did not request any simulations yet" %},
+                <a href="{% url 'simulation:input' %}">{% trans "but you can!" %}</a>
+              </p>
+              {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if simulations_user_also_has_access_to %}
+    <div class="card card-login mx-auto mt-5 mb-3">
+        <div class="card-header">{% trans "Simulation I also have access to" %}</div>
+        <div class="card-body">
+            <div class="mt-5">
+              <table class="table">
+                <tbody>
+                  {% for simulation in simulations_user_also_has_access_to %}
+                  <tr><th><a href="{% url 'simulation:detail' simulation.pk %}">{{ simulation.name }}</a></th></tr>
+                 {% endfor %}
+                </tbody>
+              </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div> {# container #}
+
+
+{% endblock content %}
+
+{% block javascript %} {{ block.super }}
+<script type="text/javascript" src="{% static 'js/simulation_list.js' %}"></script>
+{% endblock javascript %}

@@ -1,7 +1,9 @@
 import glob
 
 from django.contrib import messages
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
 
 from atlas_web.simulation.forms import SimulationForm
@@ -9,6 +11,7 @@ from atlas_web.simulation.models import AtlasSimulation
 from atlas_web.simulation.utils import create_atlas_input_files_from_valid_form
 
 
+@login_required
 def simulation_input_view(request):
     atlas9_punched_input = None
     atlas9_in_odf = None
@@ -21,6 +24,7 @@ def simulation_input_view(request):
         if form.is_valid():
             # Create a new AtlasSimulation instance that will mkdir the simulation folders
             simulation = AtlasSimulation()
+            simulation.requested_by = request.user
             simulation.save()
 
             create_atlas_input_files_from_valid_form(
@@ -90,5 +94,42 @@ def simulation_input_view(request):
             "atlas9_in_model": atlas9_in_model,
             "atlas9_in_flux": atlas9_in_flux,
             "atlas9_control": atlas9_control,
+        },
+    )
+
+
+@login_required
+def simulation_list_view(request):
+    simulations_requested_by_user = AtlasSimulation.objects.filter(
+        requested_by=request.user
+    )
+    simulations_user_also_has_access_to = AtlasSimulation.objects.filter(
+        access_list=request.user
+    )
+    return render(
+        request,
+        "simulation/list.html",
+        {
+            "simulations_requested_by_user": simulations_requested_by_user,
+            "simulations_user_also_has_access_to": simulations_user_also_has_access_to,
+        },
+    )
+
+
+@login_required
+def simulation_detail_view(request, pk):
+    simulation = get_object_or_404(AtlasSimulation, pk=pk)
+
+    if (
+        request.user != simulation.requested_by
+        and request.user not in simulation.access_list.all()
+    ):
+        raise PermissionDenied(_("You do not have access to this simulation"))
+
+    return render(
+        request,
+        "simulation/detail.html",
+        {
+            "simulation": simulation,
         },
     )
