@@ -44,7 +44,9 @@ function showFormForOdf () {
   $("label[for=\"id_overshoot\"]").hide();
 
   $("input[id=\"T_step\"]").prop("disabled", false);
+  $("input[id=\"T_step\"]").val(25);
   $("input[id=\"p_step\"]").prop("disabled", false);
+  $("input[id=\"p_step\"]").val(25);
 }
 
 function showFormForModel () {
