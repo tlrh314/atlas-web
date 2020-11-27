@@ -10,5 +10,5 @@ app_name = "simulation"
 urlpatterns = [
     path("input/", simulation_input_view, name="input"),
     path("list/", simulation_list_view, name="list"),
-    path("detail/<pk>", simulation_detail_view, name="detail"),
+    path("detail/<pk>/", simulation_detail_view, name="detail"),
 ]
