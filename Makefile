@@ -50,10 +50,10 @@ notebook-restart:  ## Restart the Jupyter Notebook
 	@make notebook
 
 bash:  ## Open an interactive bash shell in the django container
-	@docker exec -it django bash
+	@docker exec -it django bash || true
 
 manage:  ## Open an interactive Django shell [iPython interpreter]
-	@docker exec -it django bash -c "python manage.py shell_plus"
+	@docker exec -it django bash -c "python manage.py shell_plus" || true
 
 django-log:  ## Continously monitor the Django application server log
 	@while true; do \
@@ -69,7 +69,7 @@ django-run-from-image:  ## Run command in a tmp container from image, but /w pos
 		-it --rm --entrypoint=""\
 		-v"$$(pwd):/app" \
 		docker.gitlab.gwdg.de/solve/atlas-web:local \
-		bash -c "python manage.py makemigrations users"
+		bash -c "python manage.py makemigrations simulation users"
 
 django-sites-fix:  ## Set the correct Site instance (locally)
 	@docker exec django python manage.py shell -c \
