@@ -1,17 +1,7 @@
 atlas-web
 =========
 
-Behold My Awesome Project!
-
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
-     :target: https://github.com/pydanny/cookiecutter-django/
-     :alt: Built with Cookiecutter Django
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-     :target: https://github.com/ambv/black
-     :alt: Black code style
-
-
-:License: GPLv3
+:License: AGPLv3
 
 
 Settings
@@ -103,10 +93,8 @@ With MailHog running, to view messages that are sent by your application, open y
 Sentry
 ^^^^^^
 
-Sentry is an error logging aggregator service. You can sign up for a free account at  https://sentry.io/signup/?code=cookiecutter  or download and host it yourself.
+Sentry is an error logging aggregator service. We currently collect error events at https://sentry.halbesma.com/.
 The system is setup with reasonable defaults, including 404 logging and integration with the WSGI application.
-
-You must set the DSN url in production.
 
 
 Deployment
@@ -119,6 +107,6 @@ The following details how to deploy this application.
 Docker
 ^^^^^^
 
-See detailed `cookiecutter-django Docker documentation`_.
+See detailed `Howto run Atlas web with Docker`_.
 
-.. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
+.. _`Howto run Atlas web with Docker`: https://gitlab.gwdg.de/SOLVe/atlas-web/-/wikis/Development/Howto-run-Atlas-Web-with-Docker
