@@ -1,4 +1,7 @@
 $(document).ready(function () {
+  hideWavelength();
+  hideTemperature();
+  hidePressure();
   showFormForOdf();
 });
 
@@ -9,6 +12,30 @@ $(document).on("change", "select[id=\"id_calculation_type\"]", function () {
     showFormForModel();
   } else if (this.value === "flux") {
     showFormForFlux();
+  }
+});
+
+$(document).on("change", "select[id=\"id_wavelength\"]", function () {
+  if (this.value === "standard") {
+    hideWavelength();
+  } else if (this.value === "nonstandard") {
+    showWavelength();
+  }
+});
+
+$(document).on("change", "select[id=\"id_temperature\"]", function () {
+  if (this.value === "standard") {
+    hideTemperature();
+  } else if (this.value === "nonstandard") {
+    showTemperature();
+  }
+});
+
+$(document).on("change", "select[id=\"id_pressure\"]", function () {
+  if (this.value === "standard") {
+    hidePressure();
+  } else if (this.value === "nonstandard") {
+    showPressure();
   }
 });
 
@@ -24,6 +51,23 @@ $(document).on("change", "input[id=\"id_convection\"]", function () {
     $("input[id=\"id_overshoot\"]").hide();
     $("label[for=\"id_overshoot\"]").hide();
   }
+});
+
+// TODO: now that we have a setup where certain form fields are hidden/shown
+// by default we need to monitor the form submit because we can then ensure
+// that incorrect form data leads to showing the setup as it was before the submit
+$("#form").submit(function (event) {
+  event.preventDefault(); // prevents form to be submitted
+  console.log("#form.submit() called");
+
+  $.each($(this).serializeArray(), function (_, field) {
+    console.log("  ", field.name, field.value);
+  });
+
+  // So note that the form is not actually submitted anymore!
+  // this may need to be done via ajax, then show the fields that were active
+  // before post if there are form errors such that we can show the form
+  // errors on the website
 });
 
 function showFormForOdf () {
@@ -47,9 +91,6 @@ function showFormForOdf () {
   $("input[id=\"T_step\"]").attr("value", "25");
   $("input[id=\"p_step\"]").prop("disabled", false);
   $("input[id=\"p_step\"]").attr("value", "25");
-
-  showTemperature();
-  showPressure();
 }
 
 function showFormForModel () {
@@ -101,6 +142,27 @@ function showFormForFlux () {
   hidePressure();
 }
 
+function showWavelength () {
+  $("input[id=\"wavelength_start\"]").show();
+  $("label[for=\"wavelength_start\"]").show();
+
+  $("input[id=\"wavelength_end\"]").show();
+  $("label[for=\"wavelength_end\"]").show();
+
+  $("input[id=\"wavelength_step\"]").show();
+  $("label[for=\"wavelength_step\"]").show();
+}
+function hideWavelength () {
+  $("input[id=\"wavelength_start\"]").hide();
+  $("label[for=\"wavelength_start\"]").hide();
+
+  $("input[id=\"wavelength_end\"]").hide();
+  $("label[for=\"wavelength_end\"]").hide();
+
+  $("input[id=\"wavelength_step\"]").hide();
+  $("label[for=\"wavelength_step\"]").hide();
+}
+
 function showTemperature () {
   $("input[id=\"T_start\"]").show();
   $("label[for=\"T_start\"]").show();
@@ -111,7 +173,6 @@ function showTemperature () {
   $("input[id=\"T_step\"]").show();
   $("label[for=\"T_step\"]").show();
 }
-
 function hideTemperature () {
   $("input[id=\"T_start\"]").hide();
   $("label[for=\"T_start\"]").hide();
@@ -133,7 +194,6 @@ function showPressure () {
   $("input[id=\"p_step\"]").show();
   $("label[for=\"p_step\"]").show();
 }
-
 function hidePressure () {
   $("input[id=\"p_start\"]").hide();
   $("label[for=\"p_start\"]").hide();

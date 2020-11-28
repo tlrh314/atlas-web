@@ -11,8 +11,207 @@
         <div class="card-body">
 
             <div class="mt-5">
+              {% if form.errors %}
+              <div class="alert alert-danger" role="alert">
+                  {{ form.errors }}
+              </div>
+              {% endif %}
               <form id="form" method="post" novalidate>{% csrf_token %}
-                {{ form.as_p }}
+                <div>
+                    {% if form.calculation_type.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.calculation_type.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.calculation_type.label_tag }}
+                    {{ form.calculation_type }}
+                </div>
+
+                <div>
+                    {% if form.abundances.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.abundances.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.abundances.label_tag }}
+                    {{ form.abundances }}
+                </div>
+
+                <div>
+                    {% if form.metallicity.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.metallicity.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.metallicity.label_tag }}
+                    {{ form.metallicity }}
+                </div>
+
+                <div>
+                    {% if form.T_eff.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.T_eff.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.T_eff.label_tag }}
+                    {{ form.T_eff }}
+                </div>
+
+                <div>
+                    {% if form.log_G.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.log_G.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.log_G.label_tag }}
+                    {{ form.log_G }}
+                </div>
+
+                <div>
+                    {% if form.vturb.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.vturb.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.vturb.label_tag }}
+                    {{ form.vturb }}
+                </div>
+
+                <div>
+                  <div>
+                    {% if form.convection.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.convection.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.convection.label_tag }}
+                    {{ form.convection }}
+                  </div>
+                  <div>
+                    {% if form.mixing_length.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.mixing_length.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.mixing_length.label_tag }}
+                    {{ form.mixing_length }}
+                  </div>
+                  <div>
+                    {% if form.overshoot.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.overshoot.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.overshoot.label_tag }}
+                    {{ form.overshoot }}
+                  </div>
+                </div>
+
+                <div>
+                  <label for="id_wavelength">{% trans "Wavelength" %}</label>
+                  <select name="wavelength" id="id_wavelength">
+                    <option value="standard">{% trans "Standard" %}</option>
+                    <option value="nonstandard">{% trans "Non-standard" %}</option>
+                  </select>
+                  <div>
+                    {% if form.wavelength_start.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.wavelength_start.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.wavelength_start.label_tag }}
+                    {{ form.wavelength_start }}
+                  </div>
+                  <div>
+                    {% if form.wavelength_end.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.wavelength_end.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.wavelength_end.label_tag }}
+                    {{ form.wavelength_end }}
+                  </div>
+                  <div>
+                    {% if form.wavelength_step.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.wavelength_step.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.wavelength_step.label_tag }}
+                    {{ form.wavelength_step }}
+                  </div>
+                </div>
+
+                <div>
+                  <label for="id_temperature">{% trans "Temperature" %}</label>
+                  <select name="temperature" id="id_temperature">
+                    <option value="standard">{% trans "Standard" %}</option>
+                    <option value="nonstandard">{% trans "Non-standard" %}</option>
+                  </select>
+                  <div>
+                    {% if form.T_start.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.T_start.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.T_start.label_tag }}
+                    {{ form.T_start }}
+                  </div>
+                  <div>
+                    {% if form.T_end.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.T_end.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.T_end.label_tag }}
+                    {{ form.T_end }}
+                  </div>
+                  <div>
+                    {% if form.T_n.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.T_n.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.T_n.label_tag }}
+                    {{ form.T_n }}
+                  </div>
+                </div>
+
+                <div>
+                  <label for="id_pressure">{% trans "Pressure" %}</label>
+                  <select name="pressure" id="id_pressure">
+                    <option value="standard">{% trans "Standard" %}</option>
+                    <option value="nonstandard">{% trans "Non-standard" %}</option>
+                  </select>
+                  <div>
+                    {% if form.p_start.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.p_start.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.p_start.label_tag }}
+                    {{ form.p_start }}
+                  </div>
+                  <div>
+                    {% if form.p_end.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.p_end.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.p_end.label_tag }}
+                    {{ form.p_end }}
+                  </div>
+                  <div>
+                    {% if form.p_n.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.p_n.errors }}
+                    </div>
+                    {% endif %}
+                    {{ form.p_n.label_tag }}
+                    {{ form.p_n }}
+                  </div>
+                </div>
+
                 <button type="submit" class="btn btn-success">{% trans "Submit" %}</button>
               </form>
             </div>
