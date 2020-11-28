@@ -24,6 +24,7 @@ django:  ## Build image for Django+Celery container
 		--cache-from docker.gitlab.gwdg.de/solve/atlas-web:local \
 		-f compose/local/django/Dockerfile \
 		-t docker.gitlab.gwdg.de/solve/atlas-web:local .
+	@docker image prune -f
 
 django-start:  ## Start Django+Celery
 	@docker-compose -f local.yml up -d django celeryworker
