@@ -44,9 +44,12 @@ function showFormForOdf () {
   $("label[for=\"id_overshoot\"]").hide();
 
   $("input[id=\"T_step\"]").prop("disabled", false);
-  $("input[id=\"T_step\"]").val(25);
+  $("input[id=\"T_step\"]").attr("value", "25");
   $("input[id=\"p_step\"]").prop("disabled", false);
-  $("input[id=\"p_step\"]").val(25);
+  $("input[id=\"p_step\"]").attr("value", "25");
+
+  showTemperature();
+  showPressure();
 }
 
 function showFormForModel () {
@@ -69,10 +72,10 @@ function showFormForModel () {
 
   // Non configurable: T-p: standard 57 in T and 25 in p
   $("input[id=\"T_step\"]").prop("disabled", true);
-  $("input[id=\"T_step\"]").val(57);
+  $("input[id=\"T_step\"]").attr("value", "57");
 
   $("input[id=\"p_step\"]").prop("disabled", true);
-  $("input[id=\"p_step\"]").val(25);
+  $("input[id=\"p_step\"]").attr("value", "25");
 }
 
 function showFormForFlux () {
@@ -94,6 +97,50 @@ function showFormForFlux () {
   $("label[for=\"id_overshoot\"]").hide();
 
   // Non configurable: T-p (depends on wavelength grid, whether it is high or low resolution)
-  $("input[id=\"T_step\"]").prop("disabled", true);
-  $("input[id=\"p_step\"]").prop("disabled", true);
+  hideTemperature();
+  hidePressure();
+}
+
+function showTemperature () {
+  $("input[id=\"T_start\"]").show();
+  $("label[for=\"T_start\"]").show();
+
+  $("input[id=\"T_end\"]").show();
+  $("label[for=\"T_end\"]").show();
+
+  $("input[id=\"T_step\"]").show();
+  $("label[for=\"T_step\"]").show();
+}
+
+function hideTemperature () {
+  $("input[id=\"T_start\"]").hide();
+  $("label[for=\"T_start\"]").hide();
+
+  $("input[id=\"T_end\"]").hide();
+  $("label[for=\"T_end\"]").hide();
+
+  $("input[id=\"T_step\"]").hide();
+  $("label[for=\"T_step\"]").hide();
+}
+
+function showPressure () {
+  $("input[id=\"p_start\"]").show();
+  $("label[for=\"p_start\"]").show();
+
+  $("input[id=\"p_end\"]").show();
+  $("label[for=\"p_end\"]").show();
+
+  $("input[id=\"p_step\"]").show();
+  $("label[for=\"p_step\"]").show();
+}
+
+function hidePressure () {
+  $("input[id=\"p_start\"]").hide();
+  $("label[for=\"p_start\"]").hide();
+
+  $("input[id=\"p_end\"]").hide();
+  $("label[for=\"p_end\"]").hide();
+
+  $("input[id=\"p_step\"]").hide();
+  $("label[for=\"p_step\"]").hide();
 }

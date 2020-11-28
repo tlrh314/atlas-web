@@ -11,7 +11,7 @@
         <div class="card-body">
 
             <div class="mt-5">
-              <form method="post" novalidate>{% csrf_token %}
+              <form id="form" method="post" novalidate>{% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-success">{% trans "Submit" %}</button>
               </form>
