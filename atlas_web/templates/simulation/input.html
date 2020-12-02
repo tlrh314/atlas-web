@@ -270,4 +270,20 @@
 
 {% block javascript %} {{ block.super }}
 <script type="text/javascript" src="{% static 'js/simulation_input_form.min.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+  console.log("Document is ready!");
+  {% if form.calculation_type.value == odf %}
+  console.log("Setting up form for odf from the template");
+  hideWavelength();
+  hideTemperature();
+  hidePressure();
+  showFormForOdf();
+  {% elif form.calculation_type.value == model %}
+  console.log("Setting up form for model from the template");
+  {% elif form.calculation_type.value == flux %}
+  console.log("Setting up form for flux from the template");
+  {% endif %}
+});
+</script>
 {% endblock javascript %}

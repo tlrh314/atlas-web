@@ -1,10 +1,3 @@
-$(document).ready(function () {
-  hideWavelength();
-  hideTemperature();
-  hidePressure();
-  showFormForOdf();
-});
-
 $(document).on("change", "select[id=\"id_calculation_type\"]", function () {
   if (this.value === "odf") {
     showFormForOdf();
@@ -51,23 +44,6 @@ $(document).on("change", "input[id=\"id_convection\"]", function () {
     $("input[id=\"id_overshoot\"]").hide();
     $("label[for=\"id_overshoot\"]").hide();
   }
-});
-
-// TODO: now that we have a setup where certain form fields are hidden/shown
-// by default we need to monitor the form submit because we can then ensure
-// that incorrect form data leads to showing the setup as it was before the submit
-$("#form").submit(function (event) {
-  event.preventDefault(); // prevents form to be submitted
-  console.log("#form.submit() called");
-
-  $.each($(this).serializeArray(), function (_, field) {
-    console.log("  ", field.name, field.value);
-  });
-
-  // So note that the form is not actually submitted anymore!
-  // this may need to be done via ajax, then show the fields that were active
-  // before post if there are form errors such that we can show the form
-  // errors on the website
 });
 
 function showFormForOdf () {
