@@ -12,6 +12,13 @@ def create_atlas_input_files_from_valid_form(cleaned_data, simulation_input_fold
         print(cleaned_data)
         print("End of form data\n\n")
 
+    if cleaned_data["calculation_type"] == "odf":
+        print("Handle as odf")
+    elif cleaned_data["calculation_type"] == "model":
+        print("Handle as model")
+    elif cleaned_data["calculation_type"] == "flux":
+        print("Handle as flux")
+
     if cleaned_data["abundances"] == "anders":
         if settings.DEBUG:
             print("We will use anders abunances")

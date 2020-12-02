@@ -19,6 +19,12 @@ $(document).on("change", "select[id=\"id_wavelength\"]", function () {
 $(document).on("change", "select[id=\"id_temperature\"]", function () {
   if (this.value === "standard") {
     hideTemperature();
+    $("input[id=\"T_start\"]").attr("value", "1500");
+    $("input[id=\"T_start\"]").val(1500)
+    $("input[id=\"T_end\"]").attr("value", "1500");
+    $("input[id=\"T_end\"]").val(1500)
+    $("input[id=\"T_step\"]").attr("value", "25");
+    $("input[id=\"T_step\"]").val(25)
   } else if (this.value === "nonstandard") {
     showTemperature();
   }
