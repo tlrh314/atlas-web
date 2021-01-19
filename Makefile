@@ -163,12 +163,12 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@# to return non-zero exit status (--fail) such that the pipeline will fail if
 	@# it's not healthy. If you need to debug: remove the -s (silent) flag to see output.
 	@echo -e "\n\033[0;35mChecking if our Django container is ready to serve\033[0;49m\n"
-	@curl --fail --retry 5 --retry-delay 3 --connect-timeout 30 -I -H "Host: mps-atlas.mps.mpg.de" http://localhost
+	@curl -s --fail --retry 5 --retry-delay 3 --connect-timeout 30 -I -H "Host: mps-atlas.mps.mpg.de" http://localhost
 	@# We can also check the real host, but DNS resolves to the reverse proxy (MPS webserver)
 	@# so that might not tell us about problems with the application server (the exposed)
 	@# Docker container on localhost.
 	@echo -e "\n\033[0;35mChecking if our public domain is healthy\033[0;49m\n"
-	@curl -I https://mps-atlas.mps.mpg.de
+	# @curl --fail -I https://mps-atlas.mps.mpg.de
 
 remove-pycache:  ## Recursively clean pycache in path
 	find .  ! -path "."  -type d -name '__pycache__' -exec rm -rvf {} \;
