@@ -177,15 +177,3 @@ remove-buildkit-cache:  ## Clear the BuildKit cache
 	@docker builder prune --filter type=exec.cachemount
 	@echo "If prune of BuildKit cache /w cachemount filter still leaves too much dangling"
 	@echo "cache such that your Docker data storage is still full, dare prune w/o filter"
-
-prototype-start:  ## Deploy prototype at Hetzner Cloud
-	@hcloud server create --location nbg1 --ssh-key tlrh314 --type cx11 \
-		--image debian-10 --name atlasprototype \
-		--user-data-from-file compose/hetzner/prototype/cloudinit
-
-ssh-prototype:  ## SSH to the prototype VPS
-	@ssh -i ~/.ssh/hcloud_runner -o StrictHostKeyChecking=no tlrh314@$$(hcloud server ip atlasprototype) || true
-
-destroy-prototype:  ## Destroy prototype at Hetzner Cloud
-	@hcloud server shutdown atlasprototype || true
-	@hcloud server delete atlasprototype || true
