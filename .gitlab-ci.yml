@@ -109,7 +109,7 @@ deploy:
       -o preferredAuthentications=publickey -i  ~/.ssh/id_rsa.pub
       'ssh atlas "cd atlas-web && git pull && PATH=$PATH:$(pwd) make production-restart"'
   environment:
-    name: prototype
+    name: production
     url: https://mps-atlas.mps.mpg.de
   only:
   - master
