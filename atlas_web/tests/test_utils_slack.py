@@ -16,11 +16,14 @@ class TestPushToSlack:
     @override_settings(DEBUG=True)
     def test_push_to_slack_does_not_push_if_debug(self, mock_post):
         assert settings.DEBUG
+        assert "test" in os.environ["DJANGO_SETTINGS_MODULE"]
         push_to_slack("test_push_to_slack_does_not_push_if_debug")
         mock_post.assert_not_called()
 
-    @override_settings(DEBUG=True)
+    @override_settings(DEBUG=False)
     def test_push_to_slack_does_not_push_from_test_suite(self, mock_post):
+        assert not settings.DEBUG
+        assert "test" in os.environ["DJANGO_SETTINGS_MODULE"]
         push_to_slack("test_push_to_slack_does_not_push_from_test_suite")
         mock_post.assert_not_called()
 
@@ -28,6 +31,7 @@ class TestPushToSlack:
     def test_push_to_slack_does_push_if_not_debug_and_not_test_settings_module(
         self, mock_post
     ):
+        assert not settings.DEBUG
         os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.local"
         assert "test" not in os.environ["DJANGO_SETTINGS_MODULE"]
 
