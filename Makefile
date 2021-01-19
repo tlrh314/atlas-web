@@ -162,10 +162,8 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@# is responding to requests for the given hostname that Django accepts, and
 	@# to return non-zero exit status (--fail) such that the pipeline will fail if
 	@# it's not healthy. If you need to debug: remove the -s (silent) flag to see output.
-	@# Note that the -k flag is because we curl on https://localhost, but the Let's Encrypt
-	@# certificate is only valid for the real host (atlas.halbesma.com).
 	@echo -e "\n\033[0;35mChecking if our Django container is ready to serve\033[0;49m\n"
-	@curl -k --fail --retry 5 --retry-delay 3 --connect-timeout 30 -I -H "Host: mps-atlas.mps.mpg.de" https://localhost
+	@curl --fail --retry 5 --retry-delay 3 --connect-timeout 30 -I -H "Host: mps-atlas.mps.mpg.de" http://localhost
 	@# We can also check the real host, but DNS resolves to the reverse proxy (MPS webserver)
 	@# so that might not tell us about problems with the application server (the exposed)
 	@# Docker container on localhost.

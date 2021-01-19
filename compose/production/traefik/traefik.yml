@@ -6,24 +6,10 @@ entryPoints:
     # http
     address: ":80"
 
-  web-secure:
-    # https
-    address: ":443"
-
-certificatesResolvers:
-  letsencrypt:
-    # https://docs.traefik.io/master/https/acme/#lets-encrypt
-    acme:
-      email: "timo@halbesma.com"
-      storage: /etc/traefik/acme/acme.json
-      # https://docs.traefik.io/master/https/acme/#httpchallenge
-      httpChallenge:
-        entryPoint: web
-
 http:
   routers:
     web-router:
-      rule: "Host(`atlas.halbesma.com`)"
+      rule: "Host(`mps-atlas.mps.mpg.de`)"
       entryPoints:
         - web
       middlewares:
@@ -31,23 +17,7 @@ http:
         - csrf
       service: django
 
-    web-secure-router:
-      rule: "Host(`atlas.halbesma.com`)"
-      entryPoints:
-        - web-secure
-      middlewares:
-        - csrf
-      service: django
-      tls:
-        # https://docs.traefik.io/master/routing/routers/#certresolver
-        certResolver: letsencrypt
-
   middlewares:
-    redirect:
-      # https://docs.traefik.io/master/middlewares/redirectscheme/
-      redirectScheme:
-        scheme: https
-        permanent: true
     csrf:
       # https://docs.traefik.io/master/middlewares/headers/#hostsproxyheaders
       # https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
