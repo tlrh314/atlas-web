@@ -23,9 +23,9 @@ before_script:
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   # Settings > CI/CD > Variables > type is 'Variable'
-  - echo "$PROTOTYPE_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - echo "$PROTOTYPE_SSH_PUBLIC_KEY" | tr -d '\r' >> ~/.ssh/id_rsa.pub
-  - (ssh-keyscan -t rsa ${PROTOTYPE_IP} >> ~/.ssh/known_hosts) > /dev/null 2>&1
+  - echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - echo "$PUBLIC_KEY" | tr -d '\r' >> ~/.ssh/id_rsa.pub
+  - (ssh-keyscan -t rsa ssh.mps.mpg.de >> ~/.ssh/known_hosts) > /dev/null 2>&1
 
 stages:
    - test
@@ -105,9 +105,10 @@ deploy:
   variables:
     GIT_STRATEGY: none
   script:
-    - ssh ${PROTOTYPE_USER}@${PROTOTYPE_IP} -p22
+    - ssh cernetic@ssh.mps.mpg.de -p22
       -o preferredAuthentications=publickey -i  ~/.ssh/id_rsa.pub
-      "cd atlas-web && git pull && make production-restart"
+      "ssh atlas 'docker ps -a && hostname'"
+#      "cd atlas-web && git pull && make production-restart"
   environment:
     name: prototype
     url: https://atlas.halbesma.com
