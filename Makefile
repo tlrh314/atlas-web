@@ -165,12 +165,12 @@ production-restart:  ## Restart Django+Celery running from the production build
 	@# Note that the -k flag is because we curl on https://localhost, but the Let's Encrypt
 	@# certificate is only valid for the real host (atlas.halbesma.com).
 	@echo -e "\n\033[0;35mChecking if our Django container is ready to serve\033[0;49m\n"
-	@curl -k --fail --retry 5 --retry-delay 3 --connect-timeout 30 -I -H "Host: atlas.halbesma.com" https://localhost
+	@curl -k --fail --retry 5 --retry-delay 3 --connect-timeout 30 -I -H "Host: mps-atlas.mps.mpg.de" https://localhost
 	@# We can also check the real host, but DNS resolves to the reverse proxy (MPS webserver)
 	@# so that might not tell us about problems with the application server (the exposed)
 	@# Docker container on localhost.
 	@echo -e "\n\033[0;35mChecking if our public domain is healthy\033[0;49m\n"
-	@curl --fail -s -I https://atlas.halbesma.com
+	@curl -I https://mps-atlas.mps.mpg.de
 
 remove-pycache:  ## Recursively clean pycache in path
 	find .  ! -path "."  -type d -name '__pycache__' -exec rm -rvf {} \;
