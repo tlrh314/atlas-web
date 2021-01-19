@@ -16,3 +16,5 @@ CELERY_FLOWER_PASSWORD=debug
 # Connection strings required in the Django settings module
 DATABASE_URL=postgres://debug:debug@postgres:5432/atlas_web
 CELERY_BROKER_URL=redis://redis:6379/0
+
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/token1/token2/token3
