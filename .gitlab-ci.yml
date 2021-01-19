@@ -107,7 +107,7 @@ deploy:
   script:
     - ssh cernetic@ssh.mps.mpg.de -p22
       -o preferredAuthentications=publickey -i  ~/.ssh/id_rsa.pub
-      "ssh atlas 'cd atlas-web && git pull && PATH=$PATH:$(pwd) make production-restart'"
+      'ssh atlas "cd atlas-web && git pull && PATH=$PATH:$(pwd) make production-restart"'
   environment:
     name: prototype
     url: https://mps-atlas.mps.mpg.de
