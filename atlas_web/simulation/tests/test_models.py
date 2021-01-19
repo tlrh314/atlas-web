@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import pytest
 from django.conf import settings
@@ -42,4 +43,4 @@ class TestAtlasSimulation:
         # TODO: this does not cleanup folders when the test fails, so an approach
         # using a pytest fixture may have to be implemented (or setUp + tearDown
         # to create the simulation instance + delete the input.folder)
-        os.rmdir(simulation.input.folder)  # assuming the folder is empty
+        shutil.rmtree(simulation.input.folder)  # remove recursively
